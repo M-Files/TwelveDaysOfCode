@@ -10,7 +10,7 @@ namespace TwelveDaysOfCode
     public class Configuration
         : ConfigurationBase
     {
-        [DataMember]
+        [DataMember(Order = 1)]
         [JsonConfEditor(Label = "Shared Link Generation")]
         public SharedLinkGenerationConfiguration SharedLinkGenerationConfiguration { get; set; }
             = new SharedLinkGenerationConfiguration();
@@ -18,7 +18,7 @@ namespace TwelveDaysOfCode
     [DataContract]
     public abstract class ConfigurationBase
     {
-        [DataMember]
+        [DataMember(Order = 0)]
         [JsonConfEditor(DefaultValue = false)]
         public bool Enabled { get; set; } = false; 
     }

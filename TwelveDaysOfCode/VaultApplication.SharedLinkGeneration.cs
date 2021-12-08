@@ -41,7 +41,7 @@ namespace TwelveDaysOfCode
                     .Configuration?
                     .SharedLinkGenerationConfiguration?
                     .Triggers?
-                    .Where(t => t.TriggerState.IsResolved)
+                    .Where(t => t.Enabled && t.TriggerState.IsResolved)
                     .FirstOrDefault(t => t.TriggerState.ID == env.ObjVerEx.State);
             if (null == trigger)
                 return;
@@ -108,36 +108,75 @@ namespace TwelveDaysOfCode
     public class SharedLinkGenerationConfiguration
         : ConfigurationBase
     {
-        [DataMember]
-        [JsonConfEditor(DefaultValue = false)]
+        [DataMember(Order = 1)]
+        [JsonConfEditor
+        (
+            DefaultValue = false,
+            Label = "Use version-dependent links",
+            HelpText = "Version-dependent links are not supported by default, but can be enabled with a registry setting.  If supported, change this to true to allow the creation of version-specific links."
+        )]
         public bool UseVersionDependentLinks { get; set; } = false;
 
-        [DataMember]
+        [DataMember(Order = 2)]
+        [JsonConfEditor
+        (
+            HelpText = "Triggers can be used to design when this functionality should run."
+        )]
         public List<SharedLinkTrigger> Triggers { get; set; }
             = new List<SharedLinkTrigger>();
 
         [DataContract]
         public class SharedLinkTrigger
+            : ConfigurationBase
         {
-            [DataMember]
+            [DataMember(Order = 1)]
             [MFState]
-            [JsonConfEditor]
+            [JsonConfEditor
+            (
+                Label = "Trigger state",
+                HelpText = "The workflow state used to trigger the shared link creation."
+            )]
             public MFIdentifier TriggerState { get; set; }
 
-            [DataMember]
+            [DataMember(Order = 2)]
             [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeDate })]
-            [JsonConfEditor(DefaultValue = "PD.LinkExpiryDate")]
+            [JsonConfEditor
+            (
+                DefaultValue = "PD.LinkExpiryDate",
+                Label = "Link expiry date property",
+                HelpText = "The property that contains the link expiry date.  If not set on the object then the link will have an indefinite expiry."
+            )]
             public MFIdentifier LinkExpiryDate { get; set; } = "PD.LinkExpiryDate";
 
-            [DataMember]
-            [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeText, MFDataType.MFDatatypeMultiLineText })]
-            [JsonConfEditor(DefaultValue = "PD.Url")]
-            public MFIdentifier SharedLinkTarget { get; set; } = "PD.Url";
-
-            [DataMember]
-            [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeText, MFDataType.MFDatatypeMultiLineText })]
-            [JsonConfEditor(DefaultValue = "PD.Description")]
+            [DataMember(Order = 3)]
+            [MFPropertyDef
+            (
+                AllowEmpty = true,
+                Required = false,
+                Datatypes = new[] { MFDataType.MFDatatypeText, MFDataType.MFDatatypeMultiLineText }
+            )]
+            [JsonConfEditor
+            (
+                DefaultValue = "PD.Description",
+                Label = "Description property",
+                HelpText = "The property that will be used to describe the link."
+            )]
             public MFIdentifier Description { get; set; } = "PD.Description";
+
+            [DataMember(Order = 4)]
+            [MFPropertyDef
+            (
+                AllowEmpty = true,
+                Required = false,
+                Datatypes = new[] { MFDataType.MFDatatypeMultiLineText }
+            )]
+            [JsonConfEditor
+            (
+                DefaultValue = "PD.Url",
+                Label = "Shared link property",
+                HelpText = "The property to save the generated link in."
+            )]
+            public MFIdentifier SharedLinkTarget { get; set; } = "PD.Url";
         }
     }
 }
