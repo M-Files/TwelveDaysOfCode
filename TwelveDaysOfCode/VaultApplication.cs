@@ -6,6 +6,7 @@ using MFiles.VAF.Core;
 using MFilesAPI;
 using System;
 using System.Diagnostics;
+using System.Linq;
 
 namespace TwelveDaysOfCode
 {
@@ -13,8 +14,9 @@ namespace TwelveDaysOfCode
     /// The entry point for this Vault Application Framework application.
     /// </summary>
     /// <remarks>Examples and further information available on the developer portal: http://developer.m-files.com/. </remarks>
-    public class VaultApplication
+    public partial class VaultApplication
         : MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>
     {
+
     }
 }

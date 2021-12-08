@@ -8,6 +8,18 @@ namespace TwelveDaysOfCode
 {
     [DataContract]
     public class Configuration
+        : ConfigurationBase
     {
+        [DataMember]
+        [JsonConfEditor(Label = "Shared Link Generation")]
+        public SharedLinkGenerationConfiguration SharedLinkGenerationConfiguration { get; set; }
+            = new SharedLinkGenerationConfiguration();
+    }
+    [DataContract]
+    public abstract class ConfigurationBase
+    {
+        [DataMember]
+        [JsonConfEditor(DefaultValue = false)]
+        public bool Enabled { get; set; } = false; 
     }
 }
