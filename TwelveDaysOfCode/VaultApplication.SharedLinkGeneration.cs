@@ -27,94 +27,124 @@ namespace TwelveDaysOfCode
         [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize)]
         public void CreateSharedLinkHandler(EventHandlerEnvironment env)
         {
-            // Don't work if this functionality is disabled.
-            if (false == (this.Configuration?.Enabled ?? false)
-                || false == (this.Configuration?.SharedLinkGenerationConfiguration?.Enabled ?? false))
-                return;
-
-            // If it does not have a state, or isn't changing state, then die.
-            if (-1 == env.ObjVerEx.State || false == env.ObjVerEx.IsEnteringState)
-                return;
-
-            // Is there a trigger for our current state?  If not then die.
-            var trigger = this
-                    .Configuration?
-                    .SharedLinkGenerationConfiguration?
-                    .Triggers?
-                    .Where(t => t.Enabled && t.TriggerState.IsResolved)
-                    .FirstOrDefault(t => t.TriggerState.ID == env.ObjVerEx.State);
-            if (null == trigger)
-                return;
-
-            // Create the shared link.
-            var sharedLink = "";
+            try
             {
-                // We cannot link to this specific version as it's not committed, so link to the previous one.
-                var objectVersionAndProperties = env
-                    .Vault
-                    .ObjectOperations
-                    .GetLatestObjectVersionAndProperties(env.ObjVer.ObjID, false, true);
-                var sli = new SharedLinkInfo()
+                // Don't work if this functionality is disabled.
+                if (false == (this.Configuration?.Enabled ?? false)
+                    || false == (this.Configuration?.SharedLinkGenerationConfiguration?.Enabled ?? false))
                 {
-                    ObjVer = objectVersionAndProperties.ObjVer,
-                    FileVer = objectVersionAndProperties.VersionData.Files[1].FileVer
-                };
-
-                // If we have a description then set that.
-                if (trigger.Description.IsResolved && env.ObjVerEx.HasValue(trigger.Description.ID))
-                    sli.Description = env.ObjVerEx.GetPropertyText(trigger.Description.ID);
-
-                // If we have an expiry date then set that.
-                if (trigger.LinkExpiryDate.IsResolved && env.ObjVerEx.HasValue(trigger.LinkExpiryDate.ID))
-                    sli.ExpirationTime = env.ObjVerEx.GetPropertyAsDateTime(trigger.LinkExpiryDate.ID)?.ToTimestamp();
-
-                // By default M-Files doesn't allow linking to specific versions.
-                if (false == this.Configuration.SharedLinkGenerationConfiguration.UseVersionDependentLinks)
-                    sli.FileVer.Version = -1; 
-
-                // Create the shared link in the vault.
-                sli = env.Vault.SharedLinkOperations.CreateSharedLink(sli);
-
-                // Create the (usable) link.
-                {
-                    sharedLink = new Uri
-                    (
-                        new Uri(UrlHelper.GetBaseUrlForWebAccess(env.Vault)),
-                        $"/SharedLinks.aspx?accesskey={sli.AccessKey}&vaultguid={env.Vault.GetGUID()}"
-                    ).ToString();
+                    this.Logger.Log(NLog.LogLevel.Debug, "Create shared link handler skipped as it is not enabled.");
+                    return;
                 }
-            }
 
-            // Update the current object.
-            if (trigger.SharedLinkTarget.IsResolved)
-            {
-                env.ObjVerEx.SetProperty
-                (
-                    trigger.SharedLinkTarget.ID, 
-                    env.Vault.PropertyDefOperations.GetPropertyDef(trigger.SharedLinkTarget.ID).DataType,
-                    sharedLink
-                );
-            }
-            env.ObjVerEx.SaveProperties();
-
-            // Ensure the object history is correct.
-            env.ObjVerEx.SetModifiedBy(env.CurrentUserID);
-
-            // Send a link to someone?
-            if(trigger.SharedLinkRecipients.IsResolved && env.ObjVerEx.HasValue(trigger.SharedLinkRecipients.ID))
-            {
-                using (var email = new MFilesAPI.Extensions.Email.EmailMessage(this.Configuration.SmtpConfiguration))
+                // If it does not have a state, or isn't changing state, then die.
+                if (-1 == env.ObjVerEx.State || false == env.ObjVerEx.IsEnteringState)
                 {
-                    var recipients = env.ObjVerEx.GetPropertyText(trigger.SharedLinkRecipients.ID).Split(new[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
-                    if (recipients.Length > 0)
+                    this.Logger.Log(NLog.LogLevel.Debug, "Create shared link handler skipped as object is not entering a state.");
+                    return;
+                }
+
+                // Is there a trigger for our current state?  If not then die.
+                var trigger = this
+                        .Configuration?
+                        .SharedLinkGenerationConfiguration?
+                        .Triggers?
+                        .Where(t => t.Enabled && t.TriggerState.IsResolved)
+                        .FirstOrDefault(t => t.TriggerState.ID == env.ObjVerEx.State);
+                if (null == trigger)
+                {
+                    this.Logger.Log(NLog.LogLevel.Debug, "Create shared link handler skipped as no appropriate trigger found.");
+                    return;
+                }
+
+                this.Logger.Log(NLog.LogLevel.Info, $"Creating a shared link to object {env.ObjVer.ObjID.ToJSON()}.");
+
+                // Create the shared link.
+                var sharedLink = "";
+                {
+                    // We cannot link to this specific version as it's not committed, so link to the previous one.
+                    var objectVersionAndProperties = env
+                        .Vault
+                        .ObjectOperations
+                        .GetLatestObjectVersionAndProperties(env.ObjVer.ObjID, false, true);
+
+                    // Sanity.
+                    if (objectVersionAndProperties.VersionData.FilesCount != 1)
                     {
-                        foreach (var r in recipients)
-                            email.AddRecipient(MFilesAPI.Extensions.Email.AddressType.BlindCarbonCopy, r);
-                        email.Subject = $"Link to download {env.ObjVerEx.Title}";
-                        email.HtmlBody = sharedLink;
-                        email.Send();
+                        this.Logger.Log(NLog.LogLevel.Warn, $"User tried to create a link to {env.ObjVer.ObjID.ToJSON()}, but it has {objectVersionAndProperties.VersionData.FilesCount} files (only one supported).");
+                        throw new InvalidOperationException("Shared links can only be created to single-file-documents.");
+                    }
+
+                    // Populate the basic information.
+                    var sli = new SharedLinkInfo()
+                    {
+                        ObjVer = objectVersionAndProperties.ObjVer,
+                        FileVer = objectVersionAndProperties.VersionData.Files[1].FileVer
+                    };
+
+                    // If we have a description then set that.
+                    if (trigger.Description.IsResolved && env.ObjVerEx.HasValue(trigger.Description.ID))
+                        sli.Description = env.ObjVerEx.GetPropertyText(trigger.Description.ID);
+
+                    // If we have an expiry date then set that.
+                    if (trigger.LinkExpiryDate.IsResolved && env.ObjVerEx.HasValue(trigger.LinkExpiryDate.ID))
+                        sli.ExpirationTime = env.ObjVerEx.GetPropertyAsDateTime(trigger.LinkExpiryDate.ID)?.ToTimestamp();
+
+                    // By default M-Files doesn't allow linking to specific versions.
+                    if (false == this.Configuration.SharedLinkGenerationConfiguration.UseVersionDependentLinks)
+                        sli.FileVer.Version = -1;
+
+                    // Create the shared link in the vault.
+                    sli = env.Vault.SharedLinkOperations.CreateSharedLink(sli);
+
+                    // Create the (usable) link.
+                    {
+                        sharedLink = new Uri
+                        (
+                            new Uri(UrlHelper.GetBaseUrlForWebAccess(env.Vault)),
+                            $"/SharedLinks.aspx?accesskey={sli.AccessKey}&vaultguid={env.Vault.GetGUID()}"
+                        ).ToString();
+                        this.Logger.Log(NLog.LogLevel.Info, $"Link created: {sharedLink}");
                     }
                 }
+
+                // Update the current object.
+                if (trigger.SharedLinkTarget.IsResolved)
+                {
+                    env.ObjVerEx.SetProperty
+                    (
+                        trigger.SharedLinkTarget.ID,
+                        env.Vault.PropertyDefOperations.GetPropertyDef(trigger.SharedLinkTarget.ID).DataType,
+                        sharedLink
+                    );
+                }
+                env.ObjVerEx.SaveProperties();
+
+                // Ensure the object history is correct.
+                env.ObjVerEx.SetModifiedBy(env.CurrentUserID);
+
+                // Send a link to someone?
+                if (trigger.SharedLinkRecipients.IsResolved && env.ObjVerEx.HasValue(trigger.SharedLinkRecipients.ID))
+                {
+                    using (var email = new MFilesAPI.Extensions.Email.EmailMessage(this.Configuration.SmtpConfiguration))
+                    {
+                        var recipients = env.ObjVerEx.GetPropertyText(trigger.SharedLinkRecipients.ID).Split(new[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                        this.Logger.Log(NLog.LogLevel.Info, $"Emailing link to {string.Join(",", recipients)}.");
+                        if (recipients.Length > 0)
+                        {
+                            foreach (var r in recipients)
+                                email.AddRecipient(MFilesAPI.Extensions.Email.AddressType.BlindCarbonCopy, r);
+                            email.Subject = $"Link to download {env.ObjVerEx.Title}";
+                            email.HtmlBody = sharedLink;
+                            email.Send();
+                        }
+                    }
+                }
+
+            }
+            catch(Exception ex)
+            {
+                this.Logger.Fatal(ex, "Exception generating shared link.");
             }
         }
 

@@ -13,12 +13,12 @@ namespace TwelveDaysOfCode
     {
 
         [DataMember(Order = 1)]
-        [JsonConfEditor(Label = "SMTP Configuration")]
+        [JsonConfEditor(Label = "SMTP configuration")]
         public MFiles.VAF.Extensions.Email.VAFSmtpConfiguration SmtpConfiguration { get; set; }
             = new MFiles.VAF.Extensions.Email.VAFSmtpConfiguration();
 
         [DataMember(Order = 2)]
-        [JsonConfEditor(Label = "Shared Link Generation")]
+        [JsonConfEditor(Label = "Shared link generation")]
         public SharedLinkGenerationConfiguration SharedLinkGenerationConfiguration { get; set; }
             = new SharedLinkGenerationConfiguration();
     }
