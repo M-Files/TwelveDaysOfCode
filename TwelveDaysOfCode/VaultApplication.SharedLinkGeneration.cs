@@ -99,6 +99,23 @@ namespace TwelveDaysOfCode
 
             // Ensure the object history is correct.
             env.ObjVerEx.SetModifiedBy(env.CurrentUserID);
+
+            // Send a link to someone?
+            if(trigger.SharedLinkRecipients.IsResolved && env.ObjVerEx.HasValue(trigger.SharedLinkRecipients.ID))
+            {
+                using (var email = new MFilesAPI.Extensions.Email.EmailMessage(this.Configuration.SmtpConfiguration))
+                {
+                    var recipients = env.ObjVerEx.GetPropertyText(trigger.SharedLinkRecipients.ID).Split(new[] { ",", ";" }, StringSplitOptions.RemoveEmptyEntries);
+                    if (recipients.Length > 0)
+                    {
+                        foreach (var r in recipients)
+                            email.AddRecipient(MFilesAPI.Extensions.Email.AddressType.BlindCarbonCopy, r);
+                        email.Subject = $"Link to download {env.ObjVerEx.Title}";
+                        email.HtmlBody = sharedLink;
+                        email.Send();
+                    }
+                }
+            }
         }
 
 
@@ -177,6 +194,16 @@ namespace TwelveDaysOfCode
                 HelpText = "The property to save the generated link in."
             )]
             public MFIdentifier SharedLinkTarget { get; set; } = "PD.Url";
+
+            [DataMember(Order = 5)]
+            [MFPropertyDef]
+            [JsonConfEditor
+            (
+                DefaultValue = "PD.SharedLinkRecipients",
+                Label = "Shared link recipients",
+                HelpText = "The people who should receive the link via email."
+            )]
+            public MFIdentifier SharedLinkRecipients { get; set; } = "PD.SharedLinkRecipients";
         }
     }
 }
