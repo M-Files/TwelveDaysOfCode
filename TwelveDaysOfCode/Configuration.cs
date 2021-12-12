@@ -1,5 +1,6 @@
 using MFiles.VAF.Configuration;
 using MFiles.VAF.Configuration.JsonAdaptor;
+using MFiles.VAF.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -21,6 +22,11 @@ namespace TwelveDaysOfCode
         [JsonConfEditor(Label = "Shared link generation")]
         public SharedLinkGenerationConfiguration SharedLinkGenerationConfiguration { get; set; }
             = new SharedLinkGenerationConfiguration();
+
+        [DataMember(Order = 3)]
+        [JsonConfEditor(Label = "Import gists")]
+        public ImportGistConfiguration ImportGistConfiguration { get; set; }
+            = new ImportGistConfiguration();
     }
     [DataContract]
     public abstract class ConfigurationBase

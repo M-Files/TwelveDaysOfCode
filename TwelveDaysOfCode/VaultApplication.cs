@@ -9,6 +9,7 @@ using NLog.Targets;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 
 namespace TwelveDaysOfCode
 {
@@ -19,9 +20,20 @@ namespace TwelveDaysOfCode
     public partial class VaultApplication
         : MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>
     {
+
+        /// <summary>
+        /// Registers a task queue with ID "MFiles.TwelveDaysOfCode".
+        /// </summary>
+        [TaskQueue]
+        public const string TaskQueueID = "MFiles.TwelveDaysOfCode";
+
         public VaultApplication()
         {
             this.ConfigureLogging();
+
+            // Enable TLS.
+            System.Net.ServicePointManager.SecurityProtocol =
+                SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
         }
 
         ~VaultApplication()
