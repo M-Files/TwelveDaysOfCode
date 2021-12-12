@@ -1,3 +1,5 @@
+![12 Days of Code logo](lib/logo.png)
+
 # 12 Days of Code M-Files Development Challenge
 
 Have you been looking to start building M-Files customizations, or to hone your skills?  Have some free time over the festive period?  If so then why not take a look at our 12 Days of Code M-Files Development Challenge!
