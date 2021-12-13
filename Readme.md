@@ -39,7 +39,12 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Open the PowerShell file and change the vault name to install to.  Build the application in debug mode and check the Visual Studio "Output" window to check that your application was installed to the vault with no errors.
 	1.	Optional: Use nuget to add a reference to the VAF Extensions library and change the VaultApplication base class to `MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>`. 
 	1.	Open the `appdef.xml` file and update the name, version, publisher, and other information that you would like to set.  Also set the Multi-Server-Mode compatible flag to true.  Rebuild and check that the changes are shown in the M-Files Admin software.
-1. **14th December:** *Not yet published*
+1. **14th December:** Create a shared public link when a document reaches the "Shared" state in the "Share link" workflow. Populate another property with the created link.
+	1. Make sure that the object audit trail isn't affected by your code!
+	1. Tip: you can only create a shared link to a checked-in version of a file; "env.ObjVer" will not be checked in.  Instead load the latest not-checked-in version of the object using GetLatestObjectVersionAndProperties and setting "allowCheckedOut" to false.
+	1. Tip: by default M-Files does not allow version-specific file sharing.  When setting the FileVer for the link you will typically need to set the version number to -1.
+	1. Suggested extension: set the expiry date of the link to be based on another date property.
+	1. Suggested extension: send an email to someone and include the public link to the document.
 1. **15th December:** *Not yet published*
 1. **16th December:** *Not yet published*
 1. **17th December:** *Not yet published*
