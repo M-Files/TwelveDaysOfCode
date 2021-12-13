@@ -1,3 +1,5 @@
+![12 Days of Code logo](lib/logo.png)
+
 # 12 Days of Code M-Files Development Challenge
 
 Have you been looking to start building M-Files customizations, or to hone your skills?  Have some free time over the festive period?  If so then why not take a look at our 12 Days of Code M-Files Development Challenge!
@@ -33,7 +35,10 @@ Challenges will be released once per day, in the evening.  You can choose to und
 
 *Make sure that you have all your prerequisites set up: set up your M-Files server, restore the challenge vault, and install/configure Visual Studio.  Do this before the challenge begins!*
 
-1. **13th December:** *Not yet published*
+1. **13th December:** Start off simple: Use the Vault Application Framework 2.3 Visual Studio template to create a new VAF 2.3 application.
+	1. Open the PowerShell file and change the vault name to install to.  Build the application in debug mode and check the Visual Studio "Output" window to check that your application was installed to the vault with no errors.
+	1.	Optional: Use nuget to add a reference to the VAF Extensions library and change the VaultApplication base class to `MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>`. 
+	1.	Open the `appdef.xml` file and update the name, version, publisher, and other information that you would like to set.  Also set the Multi-Server-Mode compatible flag to true.  Rebuild and check that the changes are shown in the M-Files Admin software.
 1. **14th December:** *Not yet published*
 1. **15th December:** *Not yet published*
 1. **16th December:** *Not yet published*
