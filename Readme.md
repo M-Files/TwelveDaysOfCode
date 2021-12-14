@@ -45,7 +45,10 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Tip: by default M-Files does not allow version-specific file sharing.  When setting the FileVer for the link you will typically need to set the version number to -1.
 	1. Suggested extension: set the expiry date of the link to be based on another date property.
 	1. Suggested extension: send an email to someone and include the public link to the document.
-1. **15th December:** *Not yet published*
+1. **15th December:** Integrate a logging framework of your choice (NLog or Serilog may be good options) so that you can better control logging.  Add appropriate logging to anything you’ve done, and remember to use it for the next days’ work!
+	1. Suggested extension: expose the configuration for your logging framework in the M-Files Admin, allowing users to turn on and off logging, or alter the logging levels.
+	2. Suggested extension: expose the current configuration in a VAF dashboard.
+
 1. **16th December:** *Not yet published*
 1. **17th December:** *Not yet published*
 1. **18th December:** *Not yet published*
