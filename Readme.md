@@ -45,11 +45,20 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Tip: by default M-Files does not allow version-specific file sharing.  When setting the FileVer for the link you will typically need to set the version number to -1.
 	1. Suggested extension: set the expiry date of the link to be based on another date property.
 	1. Suggested extension: send an email to someone and include the public link to the document.
-1. **15th December:** Integrate a logging framework of your choice (NLog or Serilog may be good options) so that you can better control logging.  Add appropriate logging to anything you’ve done, and remember to use it for the next days’ work!
+1. **15th December:** Integrate a logging framework of your choice (NLog or Serilog may be good options) so that you can better control logging.  Add appropriate logging to anything you've done, and remember to use it for the next days' work!
 	1. Suggested extension: expose the configuration for your logging framework in the M-Files Admin, allowing users to turn on and off logging, or alter the logging levels.
 	2. Suggested extension: expose the current configuration in a VAF dashboard.
-
-1. **16th December:** *Not yet published*
+1. **16th December:** Create an asynchronous operation (task queue!) that runs once per day.  The process should request data from [this github dataset](https://api.github.com/gists) and create objects in the vault for the items that are returned.
+	1. Hint: .NET 4.5 does not support TLS 1.2 out of the box; you will need to set the ServicePointManager.SecurityProtocol in the VaultApplication constructor: `System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;`
+	1. Hint: the user agent header is required to be set to request data from this API: `webClient.Headers.Add("User-Agent", "Vault application")`
+	1. Use the ID as a unique identifier.
+	1. Use the file name as the object name.
+	1. Choose what data to pull through into objects; you may just choose to add the object's JSON into the description property.
+	1. You may want to use the VAF Extensions for this!
+	1. Consider what the appropriate transaction mode is for this operation.
+	1. Suggested extension: deal with IDs that have already been imported.
+	1. Suggested extension: enable the user to run the process on demand.
+	1. Suggested extension: allow the user to customise the schedule that this runs on.
 1. **17th December:** *Not yet published*
 1. **18th December:** *Not yet published*
 1. **19th December:** *Not yet published*
