@@ -27,6 +27,12 @@ namespace TwelveDaysOfCode
         [JsonConfEditor(Label = "Import gists")]
         public ImportGistConfiguration ImportGistConfiguration { get; set; }
             = new ImportGistConfiguration();
+
+        [DataMember(Order = 4)]
+        [JsonConfEditor(Label = "Generate documents on demand")]
+        public GenerateDocumentsOnDemandConfiguration GenerateDocumentsOnDemandConfiguration { get; set; }
+            = new GenerateDocumentsOnDemandConfiguration();
+        
     }
     [DataContract]
     public abstract class ConfigurationBase
