@@ -59,7 +59,8 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Suggested extension: deal with IDs that have already been imported.
 	1. Suggested extension: enable the user to run the process on demand.
 	1. Suggested extension: allow the user to customise the schedule that this runs on.
-1. **17th December:** *Not yet published*
+1. **17th December:** When a project moves into the "Project Agreed" state, generate a contract and project plan from the templates in the vault.
+	1. Suggested extension: make this configurable!  Allow administrators to configure which documents should be generated when an object matches some conditions.
 1. **18th December:** *Not yet published*
 1. **19th December:** *Not yet published*
 1. **20th December:** *Not yet published*
