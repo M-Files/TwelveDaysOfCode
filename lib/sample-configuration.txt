@@ -109,6 +109,20 @@
                                         "boolean": true
                                     }
                                 }
+                            },
+                            {
+                                "conditionType": "equal",
+                                "expression": {
+                                    "type": "statusValue",
+                                    "statusType": "deleted",
+                                    "indirectionLevels": []
+                                },
+                                "typedValue": {
+                                    "dataType": "boolean",
+                                    "value": {
+                                        "boolean": false
+                                    }
+                                }
                             }
                         ],
                         "Name": "Has a signed contract",
