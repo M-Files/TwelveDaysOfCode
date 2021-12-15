@@ -33,7 +33,33 @@ namespace TwelveDaysOfCode
             var dashboard = new StatusDashboard();
 
             // Add the logo.
-            dashboard.AddContent(new DashboardCustomContent($"<div style=\"background-image: url({DashboardHelper.ImageFileToDataUri("logo.png")}); height: 87px; width: 801px;\" title=\"M-Files 12 Days Of Code Challenge\"></div>"));
+            dashboard.AddContent(new DashboardCustomContent($"<div style=\"background-repeat: no-repeat; background-size: contain; background-image: url({DashboardHelper.ImageFileToDataUri("logo.png")}); height: 83px; width: 768px; margin: 16px;\" title=\"M-Files 12 Days Of Code Challenge\"></div>"));
+
+            // Add an overview of the application.
+            {
+                var panel = new DashboardPanel()
+                {
+                    Title = "Twelve Days Of Code Application",
+                    InnerContent = new DashboardCustomContentEx($@"
+					<table>
+						<tbody>
+							<tr>
+								<td style='font-size: 12px; padding: 2px 3px;'>Version:</td>
+								<td style='font-size: 12px; padding: 2px 3px;'>{ ApplicationDefinition.Version }</td>
+							</tr>
+							<tr>
+								<td style='font-size: 12px; padding: 2px 3px;'>Publisher:</td>
+								<td style='font-size: 12px; padding: 2px 3px;'>{ ApplicationDefinition.Publisher }</td>
+							</tr>
+							<tr>
+								<td style='font-size: 12px; padding: 2px 3px;'>Description:</td>
+								<td style='font-size: 12px; padding: 2px 3px;'>{ ApplicationDefinition.Description }</td>
+							</tr>
+						</tbody>
+					</table>")
+                };
+                dashboard.AddContent(panel);
+            }
 
             // Important statistics?
             if(this.Configuration?.DashboardStatisticsConfiguration?.Enabled ?? false)
@@ -77,10 +103,10 @@ namespace TwelveDaysOfCode
                 }
             }
 
-            // If there's some base content then add that.
-            var baseContent = base.GetDashboardContent(context);
-            if (false == string.IsNullOrWhiteSpace(baseContent))
-                dashboard.AddContent(new DashboardCustomContent(baseContent));
+            // Lastly, add the async stuff.
+            var asyncStuff = base.GetAsynchronousOperationDashboardContent();
+            if (null != asyncStuff)
+                dashboard.AddContent(asyncStuff);
 
             // Return our new dashboard.
             return dashboard.ToString();
