@@ -31,6 +31,18 @@ namespace TwelveDaysOfCode
         [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize)]
         public void GenerateDocumentsOnDemand(EventHandlerEnvironment env)
         {
+            /*
+             * 
+             * There is definitely an argument that this could/should be run asynchronously;
+             * if the number of documents being copied here is large, or the rules complex,
+             * then this has the potential to time out.
+             * For now this is created as a synchronous process.  This at least allows the
+             * user to see immediately that the documents have been created and to continue
+             * any other flow they are in.  However, consideration should be taken as to
+             * whether is is the correct approach in the longer term.
+             * 
+             */
+
             // Sanity.
             if (false == (this.Configuration?.GenerateDocumentsOnDemandConfiguration?.Enabled ?? false))
             {
