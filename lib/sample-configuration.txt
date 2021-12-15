@@ -1,5 +1,4 @@
 {
-    
     "Enabled": true,
     "GenerateDocumentsOnDemandConfiguration": {
         "Rules": [
@@ -43,6 +42,82 @@
                     }
                 ],
                 "Name": "Generate contract and project plan when project is agreed"
+            }
+        ],
+        "Enabled": true
+    },
+    "EnsureObjectPrerequisitesConfiguration": {
+        "Rules": [
+            {
+                "Name": "Projects must have a signed contract to be made active",
+                "Triggers": [
+                    {
+                        "Name": "Project state equals active",
+                        "Condition": [
+                            {
+                                "conditionType": "equal",
+                                "expression": {
+                                    "type": "propertyValue",
+                                    "propertyDef": 39,
+                                    "indirectionLevels": []
+                                },
+                                "typedValue": {
+                                    "dataType": "lookup",
+                                    "value": {
+                                        "lookup": {
+                                            "item": {
+                                                "state": "WFS.ProjectWorkflow.ProjectActive"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "Conditions": [
+                    {
+                        "Search": [
+                            {
+                                "conditionType": "equal",
+                                "expression": {
+                                    "type": "propertyValue",
+                                    "propertyDef": 100,
+                                    "indirectionLevels": []
+                                },
+                                "typedValue": {
+                                    "dataType": "lookup",
+                                    "value": {
+                                        "lookup": {
+                                            "item": {
+                                                "objectClass": "CL.Contract"
+                                            }
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "conditionType": "equal",
+                                "expression": {
+                                    "type": "propertyValue",
+                                    "propertyDef": "PD.IsSigned",
+                                    "indirectionLevels": []
+                                },
+                                "typedValue": {
+                                    "dataType": "boolean",
+                                    "value": {
+                                        "boolean": true
+                                    }
+                                }
+                            }
+                        ],
+                        "Name": "Has a signed contract",
+                        "ConditionType": "MFConditionTypeGreaterThanOrEqual",
+                        "Value": 1,
+                        "ExceptionMessage": "The project does not have a signed contract, so cannot be made active."
+                    }
+                ],
+                "ExceptionMessage": "The project does not have a signed contract, so cannot be made active."
             }
         ],
         "Enabled": true

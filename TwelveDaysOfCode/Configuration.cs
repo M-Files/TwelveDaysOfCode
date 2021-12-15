@@ -32,7 +32,12 @@ namespace TwelveDaysOfCode
         [JsonConfEditor(Label = "Generate documents on demand")]
         public GenerateDocumentsOnDemandConfiguration GenerateDocumentsOnDemandConfiguration { get; set; }
             = new GenerateDocumentsOnDemandConfiguration();
-        
+
+        [DataMember(Order = 5)]
+        [JsonConfEditor(Label = "Ensure object prerequisites")]
+        public EnsureObjectPrerequisitesConfiguration EnsureObjectPrerequisitesConfiguration { get; set; }
+            = new EnsureObjectPrerequisitesConfiguration();
+
     }
     [DataContract]
     public abstract class ConfigurationBase
