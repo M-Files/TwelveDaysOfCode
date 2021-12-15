@@ -61,10 +61,11 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Suggested extension: allow the user to customise the schedule that this runs on.
 1. **17th December:** When a project moves into the "Project Agreed" state, generate a contract and project plan from the templates in the vault.
 	1. Suggested extension: make this configurable!  Allow administrators to configure which documents should be generated when an object matches some conditions.
-1. **18th December:** 1. Stop a project being moved into the “Active” state if it does not have a signed contract.  You can use a state action, state post condition, state pre-condition, or event handler, as appropriate.
+1. **18th December:** 1. Stop a project being moved into the "Active" state if it does not have a signed contract.  You can use a state action, state post condition, state pre-condition, or event handler, as appropriate.
 	1. Suggested extension: make this configurable!  Allow administrators to configure what logic should be used to stop an object entering different workflow states.
-
-1. **19th December:** *Not yet published*
+1. **19th December:** VAF dashboards - shown when the user selects your application within the M-Files Admin configuration area - are great places to show information about your application and its status.
+	1. Create a custom dashboard that shows information about the application, your/your-company's contact details, and maybe even a logo or selfie.
+	1. Optional: expose some basic statistics from the vault - how many invoices are not yet approved?  How many projects are active right now?
 1. **20th December:** *Not yet published*
 1. **21st December:** *Not yet published*
 1. **22nd December:** *Not yet published*
