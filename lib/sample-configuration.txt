@@ -135,5 +135,160 @@
             }
         ],
         "Enabled": true
+    },
+    "DashboardStatisticsConfiguration": {
+        "Enabled": true,
+        "Statistics": [
+            {
+                "Name": "Unapproved invoice(s)",
+                "Search": [
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "statusValue",
+                            "statusType": "objectTypeID",
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "objType": 0
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "propertyValue",
+                            "propertyDef": 100,
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "objectClass": "CL.PurchaseInvoice"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "propertyValue",
+                            "propertyDef": 38,
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "workflow": "WF.PurchaseInvoices"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "propertyValue",
+                            "propertyDef": 39,
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "state": "WFS.PurchaseInvoices.New"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "statusValue",
+                            "statusType": "deleted",
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "boolean",
+                            "value": {
+                                "boolean": false
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "Name": "Active project(s)",
+                "Search": [
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "statusValue",
+                            "statusType": "objectTypeID",
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "objType": "OT.Project"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "propertyValue",
+                            "propertyDef": 38,
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "workflow": "WF.ProjectWorkflow"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "conditionType": "equal",
+                        "expression": {
+                            "type": "propertyValue",
+                            "propertyDef": 39,
+                            "indirectionLevels": []
+                        },
+                        "typedValue": {
+                            "dataType": "lookup",
+                            "value": {
+                                "lookup": {
+                                    "item": {
+                                        "state": "WFS.ProjectWorkflow.ProjectActive"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
     }
 }
