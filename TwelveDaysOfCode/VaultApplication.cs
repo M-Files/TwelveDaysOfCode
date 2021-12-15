@@ -12,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace TwelveDaysOfCode
 {
@@ -41,23 +42,6 @@ namespace TwelveDaysOfCode
         ~VaultApplication()
         {
             this.DestroyLogging();
-        }
-
-        public override string GetDashboardContent(IConfigurationRequestContext context)
-        {
-            // Create a new dashboard.
-            var dashboard = new StatusDashboard();
-
-            // Add the logo.
-            dashboard.AddContent(new DashboardCustomContent($"<div style=\"background-image: url({DashboardHelper.ImageFileToDataUri("logo.png")}); height: 87px; width: 801px;\" title=\"M-Files 12 Days Of Code Challenge\"></div>"));
-
-            // If there's some base content then add that.
-            var baseContent = base.GetDashboardContent(context);
-            if (false == string.IsNullOrWhiteSpace(baseContent))
-                dashboard.AddContent(new DashboardCustomContent(baseContent));
-
-            // Return our new dashboard.
-            return dashboard.ToString();
         }
 
     }

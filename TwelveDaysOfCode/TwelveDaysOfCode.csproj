@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VaultApplication.Dashboard.cs" />
     <Compile Include="VaultApplication.EnsurePrerequisites.cs" />
     <Compile Include="VaultApplication.GenerateObjectsOnDemand.cs" />
     <Compile Include="VaultApplication.Logging.cs" />
