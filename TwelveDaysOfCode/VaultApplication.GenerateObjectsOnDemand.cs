@@ -138,7 +138,6 @@ namespace TwelveDaysOfCode
     public class GenerateDocumentsOnDemandConfiguration
         : ConfigurationBase
     {
-
         [DataMember(Order = 1)]
         public List<GenerateDocumentsRule> Rules { get; set; }
             = new List<GenerateDocumentsRule>();
@@ -147,8 +146,10 @@ namespace TwelveDaysOfCode
     [DataContract]
     public class GenerateDocumentsRule
     {
+        [DataMember(Order = 1)]
+        public string Name { get; set; }
 
-        [DataMember]
+        [DataMember(Order = 2)]
         [JsonConfEditor
         (
             HelpText = "An object must match all of the conditions in one or more triggers to cause the configured actions to be run.  i.e. if there are three triggers then the object must match ALL of the conditions in trigger one, or ALL of the conditions in trigger two, or ALL of the conditions in trigger three."
@@ -156,7 +157,7 @@ namespace TwelveDaysOfCode
         public List<Trigger> Triggers { get; set; }
             = new List<Trigger>();
 
-        [DataMember]
+        [DataMember(Order = 3)]
         public List<GenerateDocumentAction> Actions { get; set; }
             = new List<GenerateDocumentAction>();
 
@@ -164,7 +165,10 @@ namespace TwelveDaysOfCode
     [DataContract]
     public class Trigger
     {
-        [DataMember]
+        [DataMember(Order = 1)]
+        public string Name { get; set; }
+
+        [DataMember(Order = 2)]
         public SearchConditionsJA Condition { get; set; }
             = new SearchConditionsJA();
     }
@@ -178,11 +182,14 @@ namespace TwelveDaysOfCode
     public class GenerateDocumentAction
     {
         [DataMember(Order = 1)]
+        public string Name { get; set; }
+
+        [DataMember(Order = 2)]
         [JsonConfEditor(DefaultValue = GenerateDocumentActionTypes.Undefined)]
         public GenerateDocumentActionTypes Type { get; set; }
             = GenerateDocumentActionTypes.Undefined;
 
-        [DataMember(Order = 2)]
+        [DataMember(Order = 3)]
         [JsonConfEditor
         (
             DefaultValue = true,
@@ -192,7 +199,7 @@ namespace TwelveDaysOfCode
         public bool CreateRelationshipToTriggerObject { get; set; }
             = true;
 
-            [DataMember(Order = 3)]
+            [DataMember(Order = 4)]
         [JsonConfEditor
         (
             Label = "Document Template",
@@ -203,7 +210,7 @@ namespace TwelveDaysOfCode
         [ValueOptions(typeof(TemplateDocumentStableValueOptionsProvider))]
         public MFIdentifier DocumentTemplate { get; set; }
 
-        [DataMember(Order = 4)]
+        [DataMember(Order = 5)]
         [MFObjType(AllowEmpty = true)]
         [JsonConfEditor
         (
@@ -215,7 +222,7 @@ namespace TwelveDaysOfCode
         )]
         public MFIdentifier ObjectType { get; set; }
 
-        [DataMember(Order = 5)]
+        [DataMember(Order = 6)]
         [JsonConfEditor
         (
             Label = "Object ID",
