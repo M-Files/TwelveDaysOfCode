@@ -6,7 +6,7 @@
   <guid>03e08122-6c6a-47ba-bcba-4d323bad2729</guid>
   <name>Twelve Days Of Code (M-Files Development Challenge)</name>
   <description>An example implementation of the various challenges that form the Twelve Days Of Code.</description>
-  <publisher>Craig Hawker</publisher>
+  <publisher>Craig Hawker / M-Files</publisher>
   <version>0.1</version>
   <copyright></copyright>
   <required-mfiles-version>20.5.0.0</required-mfiles-version>
