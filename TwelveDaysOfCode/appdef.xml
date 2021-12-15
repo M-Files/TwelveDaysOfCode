@@ -5,7 +5,7 @@
 			xsi:noNamespaceSchemaLocation="http://www.m-files.com/schemas/appdef-server-v3.xsd">
   <guid>03e08122-6c6a-47ba-bcba-4d323bad2729</guid>
   <name>Twelve Days Of Code (M-Files Development Challenge)</name>
-  <description></description>
+  <description>An example implementation of the various challenges that form the Twelve Days Of Code.</description>
   <publisher>Craig Hawker</publisher>
   <version>0.1</version>
   <copyright></copyright>
