@@ -38,7 +38,7 @@ namespace TwelveDaysOfCode
             // Important statistics?
             if(this.Configuration?.DashboardStatisticsConfiguration?.Enabled ?? false)
             {
-                var table = new DashboardTable();
+                var items = new List<string>();
                 foreach(var stat in this.Configuration?.DashboardStatisticsConfiguration?.Statistics ?? new List<Statistic>())
                 {
                     // Sanity.
@@ -52,30 +52,26 @@ namespace TwelveDaysOfCode
                     // Execute the search.
                     var resultsCount = new MFSearchBuilder(context.Vault, stat.Search.ToApiObject(context.Vault)).FindCount();
 
-                    // Create the row.
-                    var row = new DashboardTableRow();
+                    // Create the item.
                     if (string.IsNullOrWhiteSpace(stat.FormatString))
                     {
                         // Just use the name.
-                        row.AddCell($"{stat.Name}: {resultsCount}");
+                        items.Add($"{stat.Name}: {resultsCount}");
                     }
                     else
                     {
                         // Use the format string.
-                        row.AddCell(string.Format(stat.FormatString, resultsCount));
+                        items.Add(string.Format(stat.FormatString, resultsCount));
                     }
-
-                    // Add the row.
-                    table.Rows.Add(row);
                 }
 
                 // If we have any items then add them to the dashboard.
-                if (table.Rows.Count > 0)
+                if (items.Count > 0)
                 {
                     var panel = new DashboardPanel()
                     {
                         Title = "Vault statistics",
-                        InnerContent = table
+                        InnerContent = new DashboardCustomContent($"<ul>{string.Join("", items.Select(i => $"<li>{System.Security.SecurityElement.Escape(i)}</li>"))}</ul>")
                     };
                     dashboard.AddContent(panel);
                 }
