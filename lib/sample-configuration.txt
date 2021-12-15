@@ -1,0 +1,50 @@
+{
+    
+    "Enabled": true,
+    "GenerateDocumentsOnDemandConfiguration": {
+        "Rules": [
+            {
+                "Triggers": [
+                    {
+                        "Condition": [
+                            {
+                                "conditionType": "equal",
+                                "expression": {
+                                    "type": "propertyValue",
+                                    "propertyDef": 39,
+                                    "indirectionLevels": []
+                                },
+                                "typedValue": {
+                                    "dataType": "lookup",
+                                    "value": {
+                                        "lookup": {
+                                            "item": {
+                                                "state": "WFS.ProjectWorkflow.ProjectAgreed"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        ],
+                        "Name": "Project is agreed"
+                    }
+                ],
+                "Actions": [
+                    {
+                        "Type": "SelectTemplateDocument",
+                        "DocumentTemplate": 1,
+                        "Name": "Generate contract"
+                    },
+                    {
+                        "Type": "EnterDocumentIDAndType",
+                        "ObjectType": "{53F0C8FD-0BF0-47C4-8FA6-4C2D0DADB650}",
+                        "ObjectID": 2,
+                        "Name": "Generate project plan"
+                    }
+                ],
+                "Name": "Generate contract and project plan when project is agreed"
+            }
+        ],
+        "Enabled": true
+    }
+}
