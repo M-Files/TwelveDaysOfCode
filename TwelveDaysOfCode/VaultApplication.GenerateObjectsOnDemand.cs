@@ -25,7 +25,7 @@ namespace TwelveDaysOfCode
     {
 
         /// <summary>
-        /// Handles the <see cref="MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize" /> event.
+        /// Generates required documents as per the configured rules.
         /// </summary>
         /// <param name="env">The vault/object environment.</param>
         [EventHandler(MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize)]
