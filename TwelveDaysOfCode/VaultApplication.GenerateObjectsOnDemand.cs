@@ -149,6 +149,10 @@ namespace TwelveDaysOfCode
     {
 
         [DataMember]
+        [JsonConfEditor
+        (
+            HelpText = "An object must match all of the conditions in one or more triggers to cause the configured actions to be run.  i.e. if there are three triggers then the object must match ALL of the conditions in trigger one, or ALL of the conditions in trigger two, or ALL of the conditions in trigger three."
+        )]
         public List<Trigger> Triggers { get; set; }
             = new List<Trigger>();
 
@@ -220,6 +224,12 @@ namespace TwelveDaysOfCode
         )]
         public int ObjectID { get; set; }
 
+        /// <summary>
+        /// Returns the object selected in this configuration.
+        /// </summary>
+        /// <param name="vault">The vault reference to load the object from.</param>
+        /// <returns>The object, or null if the configuration is invalid.</returns>
+        /// <exception cref="NotImplementedException">Thrown if <see cref="Type"/> is not handled.</exception>
         public ObjVerEx LoadConfiguredObject(Vault vault)
         {
             switch (this.Type)
@@ -227,18 +237,39 @@ namespace TwelveDaysOfCode
                 case GenerateDocumentActionTypes.Undefined:
                     return null;
                 case GenerateDocumentActionTypes.SelectTemplateDocument:
-                    // Deal with nothing configured/selected.
-                    if (null == this.DocumentTemplate)
-                        return null;
-                    // Return the selected object.
-                    return new ObjVerEx(vault, (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument, this.DocumentTemplate.ID, -1);
+                    { 
+                        // Deal with nothing configured/selected.
+                        if (null == this.DocumentTemplate)
+                            return null;
+
+                        // Return the selected object.
+                        try
+                        {
+                            var objVerEx = new ObjVerEx(vault, (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument, this.DocumentTemplate.ID, -1);
+                            objVerEx.EnsureLoaded();
+                            return objVerEx;
+                        }
+                        catch { return null; }
+                    }
+
                 case GenerateDocumentActionTypes.EnterDocumentIDAndType:
-                    // Deal with a bad configuration.
-                    if (this.ObjectID <= 0)
-                        return null;
-                    if (null == this.ObjectType || false == this.ObjectType.IsResolved)
-                        return null;
-                    return new ObjVerEx(vault, this.ObjectType.ID, this.ObjectID, -1);
+                    {
+                        // Deal with a bad configuration.
+                        if (this.ObjectID <= 0)
+                            return null;
+                        if (null == this.ObjectType || false == this.ObjectType.IsResolved)
+                            return null;
+
+                        // Return the selected object.
+                        try
+                        {
+                            var objVerEx = new ObjVerEx(vault, this.ObjectType.ID, this.ObjectID, -1);
+                            objVerEx.EnsureLoaded();
+                            return objVerEx;
+                        }
+                        catch { return null; }
+                    }
+
                 default:
                     throw new NotImplementedException($"Type {this.Type} was not handled.");
             }
@@ -253,6 +284,10 @@ namespace TwelveDaysOfCode
         [JsonConfEditor(Label = "Enter object ID and type")]
         EnterDocumentIDAndType = 2
     }
+
+    /// <summary>
+    /// Provides a list of not-deleted documents with "Is Template = true".
+    /// </summary>
     public class TemplateDocumentStableValueOptionsProvider
         : IStableValueOptionsProvider
     {
