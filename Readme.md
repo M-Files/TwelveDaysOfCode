@@ -18,7 +18,7 @@ We will be running the challenge between the 13th and 24th December.  This allow
 * If you do have M-Files development experience then take this opportunity to try out new things.  Want to unit test approaches?  Go for it.  Want to try out the VAF Extensions library? Awesome!
 * Keep things positive and constructive.  Everyone's code style and concerns are different; acknowledge and accept those.
 * Some of the M-Files team will be posting example solutions each day.  If you'd like us to see what you've built then we'll monitor <a href="https://www.linkedin.com/feed/hashtag/?keywords=MFiles12DaysOfCode">LinkedIn</a> and <a href="https://twitter.com/hashtag/MFiles12DaysOfCode">Twitter</a> for the hashtag #MFiles12DaysOfCode, or post on the M-Files Developer Community!
-* *There are no points or prizes, unfortunately.
+* There are no points or prizes, unfortunately.
 
 ## Getting Started
 
@@ -61,7 +61,7 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Suggested extension: allow the user to customise the schedule that this runs on.
 1. **17th December:** When a project moves into the "Project Agreed" state, generate a contract and project plan from the templates in the vault.
 	1. Suggested extension: make this configurable!  Allow administrators to configure which documents should be generated when an object matches some conditions.
-1. **18th December:** 1. Stop a project being moved into the “Active” state if it does not have a signed contract.  You can use a state action, state post condition, state pre-condition, or event handler, as appropriate.
+1. **18th December:** Stop a project being moved into the “Active” state if it does not have a signed contract.  You can use a state action, state post condition, state pre-condition, or event handler, as appropriate.
 	1. Suggested extension: make this configurable!  Allow administrators to configure what logic should be used to stop an object entering different workflow states.
 
 1. **19th December:** *Not yet published*
