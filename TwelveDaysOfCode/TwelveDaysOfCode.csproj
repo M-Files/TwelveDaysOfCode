@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="install-application.ps1" />
+    <Compile Include="VaultApplication.UploadToFinance.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MFiles.VAF">
