@@ -38,6 +38,11 @@ namespace TwelveDaysOfCode
         public EnsureObjectPrerequisitesConfiguration EnsureObjectPrerequisitesConfiguration { get; set; }
             = new EnsureObjectPrerequisitesConfiguration();
 
+        [DataMember(Order = 5)]
+        [JsonConfEditor(Label = "Dashboard statistics")]
+        public DashboardStatisticsConfiguration DashboardStatisticsConfiguration { get; set; }
+            = new DashboardStatisticsConfiguration();
+
     }
     [DataContract]
     public abstract class ConfigurationBase

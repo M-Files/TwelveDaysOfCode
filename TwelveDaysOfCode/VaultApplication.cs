@@ -2,6 +2,8 @@ using MFiles.VAF;
 using MFiles.VAF.AppTasks;
 using MFiles.VAF.Common;
 using MFiles.VAF.Configuration;
+using MFiles.VAF.Configuration.AdminConfigurations;
+using MFiles.VAF.Configuration.Domain.Dashboards;
 using MFiles.VAF.Core;
 using MFilesAPI;
 using NLog;
@@ -10,6 +12,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace TwelveDaysOfCode
 {
