@@ -68,7 +68,12 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Optional: expose some basic statistics from the vault - how many invoices are not yet approved?  How many projects are active right now?
 1. **20th December:** When an Invoice moves into the "Pending upload to finance" state, the PDF should be written to disk along with an XML file containing basic information such as the associated Purchase Order number, then the object moved to the next workflow state.  This should be done as an asynchronous operation (task queues!).
 	1. Suggested extension: design a process for handling that the Invoice may be checked out so cannot be updated by the task processor.
-1. **21st December:** *Not yet published*
+1. **21st December:** When an employee leaves the business it is important that all of the contracts that they were managing are assigned to someone else.  When a user is marked as having left the company, find all documents where the "Contract Owner" is the leaving user, and change the owner to their "Successor".  Use the "Former employee" workflow state a trigger for this process. 
+	1. Test this by marking Bob T Builder as having left, with his contracts now owned by Pilchard T Cat.
+	1. This should be implemented as an asynchronous operation.
+	1. Consider what the transaction mode should be for this operation.
+	1. Suggested extension: Consider the performance impact of there being thousands of contracts owned by one person; use `CheckOutMultipleObjects`/`SetPropertiesOfMultipleObjects`/`CheckInMultipleObjects` to instead work with batches of objects.
+	1. Suggested extension: decide on a reasonable process for handling situations where batches (or single objects) cannot be updated.
 1. **22nd December:** *Not yet published*
 1. **23rd December:** *Not yet published*
 1. **24th December:** *Not yet published*

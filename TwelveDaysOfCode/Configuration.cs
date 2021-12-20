@@ -43,6 +43,12 @@ namespace TwelveDaysOfCode
         public DashboardStatisticsConfiguration DashboardStatisticsConfiguration { get; set; }
             = new DashboardStatisticsConfiguration();
 
+
+        [DataMember(Order = 6)]
+        [JsonConfEditor(Label = "Upload to finance")]
+        public UploadToFinanceConfiguration UploadToFinanceConfiguration { get; set; }
+            = new UploadToFinanceConfiguration();
+
     }
     [DataContract]
     public abstract class ConfigurationBase

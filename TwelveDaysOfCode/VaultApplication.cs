@@ -37,6 +37,12 @@ namespace TwelveDaysOfCode
             // Enable TLS.
             System.Net.ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+
+            // Set up the finance uploader.
+            this.FinanceUploader = new SaveToDiskUploader
+            (
+                () => this.Configuration?.UploadToFinanceConfiguration?.OutputPath
+            );
         }
 
         ~VaultApplication()
