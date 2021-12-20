@@ -74,6 +74,6 @@ Challenges will be released once per day, in the evening.  You can choose to und
 	1. Consider what the transaction mode should be for this operation.
 	1. Suggested extension: Consider the performance impact of there being thousands of contracts owned by one person; use `CheckOutMultipleObjects`/`SetPropertiesOfMultipleObjects`/`CheckInMultipleObjects` to instead work with batches of objects.
 	1. Suggested extension: decide on a reasonable process for handling situations where batches (or single objects) cannot be updated.
-1. **22nd December:** *Not yet published*
+1. **22nd December:** Add [licensing](https://developer.m-files.com/Frameworks/Vault-Application-Framework/Licensing/) to your application.  You can choose how the application should operate if the licence is missing or expired.
 1. **23rd December:** *Not yet published*
 1. **24th December:** *Not yet published*
