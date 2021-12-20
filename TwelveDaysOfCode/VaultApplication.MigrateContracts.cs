@@ -92,8 +92,15 @@ namespace TwelveDaysOfCode
             var transactionRunner = this.GetTransactionRunner();
 
             // Iterate over each contract and update it.
+            // This runs a segmented search so will find everything, even in a very large vault.
+            // It might be slow, though!
+            var itemsUpdated = 0;
             searchBuilder.ForEach((ov) =>
             {
+                // Throw if needed.
+                job.ThrowIfJobAbortRequested();
+                job.ThrowIfTaskCancellationRequested();
+
                 // We will update each one in a single transaction.
                 // Not the most efficient, so we may re-visit this.
                 transactionRunner.Run((transactionalVault) =>
@@ -147,15 +154,26 @@ namespace TwelveDaysOfCode
                             propertyValuesBuilder.Values
                         );
                     }
+
+                    itemsUpdated++;
+                    job.Update(details: $"Updated {itemsUpdated}");
+
+                    // Log?
+                    if(itemsUpdated % 20 == 0)
+                        this.Logger.Info($"Migrated {itemsUpdated} documents from {personLeaving.Title} to {successor.Title}.");
                 });
             });
+
+            // Log that we're done.
+            this.Logger.Info($"Migrated {itemsUpdated} documents from {personLeaving.Title} to {successor.Title}.");
 
             // We should not have any more at this point, but let's just be sure.
             // This could happen if items were added whilst the above foreach was running
             // and we have no other logic to stop it.
-            if(searchBuilder.FindCount() > 0)
+            if (searchBuilder.FindCount() > 0)
             {
                 // Re-schedule it to run.
+                this.Logger.Info($"Adding task to queue to migrate documents from {personLeaving.Title} to {successor.Title}");
                 this.TaskManager.AddTask(job.Vault, TaskQueueID, MigrateContractsToSuccessorTaskType, job.Directive);
             }
 
@@ -204,10 +222,13 @@ namespace TwelveDaysOfCode
             {
                 throw new InvalidOperationException("Successor cannot be the person who is leaving.");
             }
+            var successor = new ObjVerEx(env.Vault, env.ObjVerEx.Type, successorId, -1);
+            successor.EnsureLoaded();
 
             // TODO: Probably needs some additional logic to make sure that the successor has not left!
 
             // Add the task to the queue.
+            this.Logger.Info($"Adding task to queue to migrate documents from {env.ObjVerEx.Title} to {successor.Title}");
             this.TaskManager.AddTask
             (
                 env.Vault,
@@ -215,6 +236,7 @@ namespace TwelveDaysOfCode
                 MigrateContractsToSuccessorTaskType, 
                 new MigrateContractsToSuccessorTaskDirective()
                 {
+                    DisplayName = $"Migrate documents from {env.ObjVerEx.Title} to {successor.Title}",
                     PersonLeaving = new ObjIDTaskDirective()
                     {
                         ObjectTypeID = this.Configuration.MigrateContractsConfiguration.EmployeeObjectType.ID,
@@ -231,7 +253,7 @@ namespace TwelveDaysOfCode
 
         [DataContract]
         public class MigrateContractsToSuccessorTaskDirective
-            : TaskDirective
+            : TaskDirectiveWithDisplayName
         {
             [DataMember]
             public ObjIDTaskDirective PersonLeaving { get; set; }
