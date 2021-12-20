@@ -56,6 +56,7 @@
     <Compile Include="VaultApplication.EnsurePrerequisites.cs" />
     <Compile Include="VaultApplication.GenerateObjectsOnDemand.cs" />
     <Compile Include="VaultApplication.Logging.cs" />
+    <Compile Include="VaultApplication.MigrateContracts.cs" />
     <Compile Include="VaultApplication.RetrieveGists.cs" />
     <Compile Include="VaultApplication.SharedLinkGeneration.cs" />
     <Compile Include="VaultApplication.cs" />

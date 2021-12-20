@@ -49,6 +49,11 @@ namespace TwelveDaysOfCode
         public UploadToFinanceConfiguration UploadToFinanceConfiguration { get; set; }
             = new UploadToFinanceConfiguration();
 
+        [DataMember(Order = 7)]
+        [JsonConfEditor(Label = "Migrate contracts on person leaving")]
+        public MigrateContractsConfiguration MigrateContractsConfiguration { get; set; }
+            = new MigrateContractsConfiguration();
+
     }
     [DataContract]
     public abstract class ConfigurationBase
