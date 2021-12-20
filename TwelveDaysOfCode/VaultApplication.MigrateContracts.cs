@@ -142,11 +142,16 @@ namespace TwelveDaysOfCode
                         // Assign it to the successor as it cannot be updated.
                         var propertyValuesBuilder = new MFPropertyValuesBuilder(transactionalVault);
                         propertyValuesBuilder.SetClass((int)MFBuiltInObjectClass.MFBuiltInObjectClassGenericAssignment);
-                        propertyValuesBuilder.SetTitle("Contract could not be assigned to successor");
+                        propertyValuesBuilder.SetTitle($"Contract could not be assigned to {successor.Title}");
                         propertyValuesBuilder.AddLookup
                         (
                             transactionalVault.ObjectTypeOperations.GetObjectType(ov.ObjVer.Type).DefaultPropertyDef,
                             ov.ObjVer.ID
+                        );
+                        propertyValuesBuilder.AddLookup
+                        (
+                            (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefAssignedTo,
+                            successor.GetLookupID(this.Configuration.MigrateContractsConfiguration.MFilesUser.ID)
                         );
                         transactionalVault.ObjectOperations.CreateNewObjectExQuick
                         (
@@ -166,16 +171,6 @@ namespace TwelveDaysOfCode
 
             // Log that we're done.
             this.Logger.Info($"Migrated {itemsUpdated} documents from {personLeaving.Title} to {successor.Title}.");
-
-            // We should not have any more at this point, but let's just be sure.
-            // This could happen if items were added whilst the above foreach was running
-            // and we have no other logic to stop it.
-            if (searchBuilder.FindCount() > 0)
-            {
-                // Re-schedule it to run.
-                this.Logger.Info($"Adding task to queue to migrate documents from {personLeaving.Title} to {successor.Title}");
-                this.TaskManager.AddTask(job.Vault, TaskQueueID, MigrateContractsToSuccessorTaskType, job.Directive);
-            }
 
         }
 
@@ -211,6 +206,11 @@ namespace TwelveDaysOfCode
                 this.Logger.Fatal($"Successor property is not configured.");
                 throw new InvalidOperationException("Successor property is not configured.");
             }
+            if (false == (this.Configuration.MigrateContractsConfiguration?.MFilesUser?.IsResolved ?? false))
+            {
+                this.Logger.Fatal($"M-Files user property is not configured.");
+                throw new InvalidOperationException("M-Files user property is not configured.");
+            }
 
             // Read the value of the successor property.
             var successorId = env.ObjVerEx.GetLookupID(this.Configuration.MigrateContractsConfiguration.SuccessorProperty.ID);
@@ -224,6 +224,12 @@ namespace TwelveDaysOfCode
             }
             var successor = new ObjVerEx(env.Vault, env.ObjVerEx.Type, successorId, -1);
             successor.EnsureLoaded();
+
+            // Make sure that the successor has an M-Files user!
+            if(-1 == successor.GetLookupID(this.Configuration.MigrateContractsConfiguration.MFilesUser.ID))
+            {
+                throw new InvalidOperationException("Successor must have an M-Files user.");
+            }
 
             // TODO: Probably needs some additional logic to make sure that the successor has not left!
 
@@ -294,6 +300,11 @@ namespace TwelveDaysOfCode
             [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup, MFDataType.MFDatatypeMultiSelectLookup })]
             [JsonConfEditor(Label = "Successor")]
             public MFIdentifier SuccessorProperty { get; set; } = "PD.Successor";
+
+            [DataMember(Order = 5)]
+            [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup })]
+            [JsonConfEditor(Label = "M-Files user")]
+            public MFIdentifier MFilesUser { get; set; } = "PD.MfilesUser";
         }
 
 
