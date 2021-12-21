@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application
+			type="server-application"
+			xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:noNamespaceSchemaLocation="http://www.m-files.com/schemas/appdef-server-v2.xsd">
+  <guid>4038fbf8-5234-4a7d-be49-172b2994b6cd</guid>
+  <name>ExifData</name>
+  <description></description>
+  <publisher></publisher>
+  <version>0.1</version>
+  <copyright></copyright>
+  <required-mfiles-version>12.0.6400.37</required-mfiles-version>
+  <application-object>
+    <assembly>ExifData.dll</assembly>
+    <class>ExifData.MyApplication</class>
+  </application-object>
+</application>

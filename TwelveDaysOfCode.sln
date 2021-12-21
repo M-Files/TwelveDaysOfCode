@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwelveDaysOfCode", "TwelveDaysOfCode\TwelveDaysOfCode.csproj", "{DBEA0E20-7C3A-49E2-B2B5-832DE0A3B113}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExifData", "ExifData\ExifData.csproj", "{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,6 +20,12 @@ Global
 		{DBEA0E20-7C3A-49E2-B2B5-832DE0A3B113}.DebugWithoutDeployment|Any CPU.Build.0 = DebugWithoutDeployment|Any CPU
 		{DBEA0E20-7C3A-49E2-B2B5-832DE0A3B113}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBEA0E20-7C3A-49E2-B2B5-832DE0A3B113}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.DebugWithoutDeployment|Any CPU.ActiveCfg = Debug|Any CPU
+		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.DebugWithoutDeployment|Any CPU.Build.0 = Debug|Any CPU
+		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
