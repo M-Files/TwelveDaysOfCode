@@ -14,8 +14,14 @@ using System.Threading.Tasks;
 
 namespace TwelveDaysOfCode
 {
-    public partial class VaultApplication
+    internal class MigrateContractsModule
+        : SimpleModuleBase<MigrateContractsConfiguration>
     {
+        public MigrateContractsModule()
+            : base((c) => c?.MigrateContractsConfiguration)
+        {
+            this.Name = "Migrate contracts to successor";
+        }
 
         /// <summary>
         /// The task type for migrating all contracts from one person to another.
@@ -25,17 +31,17 @@ namespace TwelveDaysOfCode
         /// <summary>
         /// Processes items of type <see cref="MigrateContractsToSuccessorTaskType" /> on queue <see cref="TaskQueueID" />
         /// </summary>
-        [TaskProcessor(TaskQueueID, MigrateContractsToSuccessorTaskType, TransactionMode = TransactionMode.Unsafe)]
+        [TaskProcessor(VaultApplication.TaskQueueID, MigrateContractsToSuccessorTaskType, TransactionMode = TransactionMode.Unsafe)]
         [ShowOnDashboard("Migrate contracts to successor")]
         public void MigrateContractsToSuccessor(ITaskProcessingJob<MigrateContractsToSuccessorTaskDirective> job)
         {
             // Sanity.
-            if (false == (this.Configuration?.MigrateContractsConfiguration?.Enabled ?? false))
+            if (false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Migration of contracts to successor is disabled in configuration; re-queuing task");
                 throw new AppTaskException(TaskProcessingJobResult.Requeue);
             }
-            if(false == (this.Configuration.MigrateContractsConfiguration?.ContractOwnerProperty?.IsResolved ?? false))
+            if (false == (this.Configuration.ContractOwnerProperty?.IsResolved ?? false))
             {
                 this.Logger.Fatal($"Contract owner property is not configured.");
                 throw new AppTaskException(TaskProcessingJobResult.Requeue);
@@ -55,7 +61,7 @@ namespace TwelveDaysOfCode
                     throw new AppTaskException(TaskProcessingJobResult.Fatal);
                 }
                 try
-                { 
+                {
                     personLeaving = new ObjVerEx(job.Vault, job.Vault.ObjectOperations.GetLatestObjectVersionAndProperties(personLeavingObjID, false, true));
                 }
                 catch
@@ -85,11 +91,12 @@ namespace TwelveDaysOfCode
             }
 
             // Find all contracts that are assigned to the person leaving.
-            var searchBuilder = new MFSearchBuilder(job.Vault, this.Configuration?.MigrateContractsConfiguration?.DocumentsToUpdate?.ToApiObject() ?? new SearchConditions());
-            searchBuilder.Property(this.Configuration.MigrateContractsConfiguration.ContractOwnerProperty.ID, personLeaving.ID);
+            var searchBuilder = new MFSearchBuilder(job.Vault, this.Configuration?.DocumentsToUpdate?.ToApiObject() ?? new SearchConditions());
+            searchBuilder.Property(this.Configuration.ContractOwnerProperty.ID, personLeaving.ID);
 
             // Get the transaction runner; we'll run each one in a transaction.
-            var transactionRunner = this.GetTransactionRunner();
+            var transactionRunner = this.VaultApplication?.GetTransactionRunner()
+                ?? throw new AppTaskException(TaskProcessingJobResult.Fatal, "Transaction runner could not be loaded.");
 
             // Iterate over each contract and update it.
             // This runs a segmented search so will find everything, even in a very large vault.
@@ -115,7 +122,7 @@ namespace TwelveDaysOfCode
                         var b = objVerEx.StartRequireCheckedOut();
 
                         // Update the required property.
-                        var pv = objVerEx.GetProperty(this.Configuration.MigrateContractsConfiguration.ContractOwnerProperty.ID);
+                        var pv = objVerEx.GetProperty(this.Configuration.ContractOwnerProperty.ID);
                         if (pv.TypedValue.DataType == MFDataType.MFDatatypeLookup)
                             pv.Value.SetValue(MFDataType.MFDatatypeLookup, successor.ID);
                         else if (pv.TypedValue.DataType == MFDataType.MFDatatypeMultiSelectLookup)
@@ -151,7 +158,7 @@ namespace TwelveDaysOfCode
                         propertyValuesBuilder.AddLookup
                         (
                             (int)MFBuiltInPropertyDef.MFBuiltInPropertyDefAssignedTo,
-                            successor.GetLookupID(this.Configuration.MigrateContractsConfiguration.MFilesUser.ID)
+                            successor.GetLookupID(this.Configuration.MFilesUser.ID)
                         );
                         transactionalVault.ObjectOperations.CreateNewObjectExQuick
                         (
@@ -164,7 +171,7 @@ namespace TwelveDaysOfCode
                     job.Update(details: $"Updated {itemsUpdated}");
 
                     // Log?
-                    if(itemsUpdated % 20 == 0)
+                    if (itemsUpdated % 20 == 0)
                         this.Logger.Info($"Migrated {itemsUpdated} documents from {personLeaving.Title} to {successor.Title}.");
                 });
             });
@@ -182,38 +189,38 @@ namespace TwelveDaysOfCode
         public void MigrateContractsToSuccessor(EventHandlerEnvironment env)
         {
             // Sanity.
-            if (false == (this.Configuration?.MigrateContractsConfiguration?.Enabled ?? false))
+            if (false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Migration of contracts is disabled in configuration; skipping checks.");
                 return;
             }
 
             // Does the object match the trigger?
-            if (false == (this.Configuration?.MigrateContractsConfiguration?.Trigger?.Condition?.IsMatch(env.ObjVerEx, true, env.CurrentUserID) ?? false))
+            if (false == (this.Configuration?.Trigger?.Condition?.IsMatch(env.ObjVerEx, true, env.CurrentUserID) ?? false))
             {
                 this.Logger.Info($"Object {env.ObjVer.ToJSON()} does not match trigger to migrate contracts.");
                 return;
             }
 
             // More sanity.
-            if (false == (this.Configuration.MigrateContractsConfiguration?.EmployeeObjectType?.IsResolved ?? false))
+            if (false == (this.Configuration.EmployeeObjectType?.IsResolved ?? false))
             {
                 this.Logger.Fatal($"Employee object type is not configured.");
                 throw new InvalidOperationException("Employee object type  is not configured.");
             }
-            if (false == (this.Configuration.MigrateContractsConfiguration?.SuccessorProperty?.IsResolved ?? false))
+            if (false == (this.Configuration.SuccessorProperty?.IsResolved ?? false))
             {
                 this.Logger.Fatal($"Successor property is not configured.");
                 throw new InvalidOperationException("Successor property is not configured.");
             }
-            if (false == (this.Configuration.MigrateContractsConfiguration?.MFilesUser?.IsResolved ?? false))
+            if (false == (this.Configuration.MFilesUser?.IsResolved ?? false))
             {
                 this.Logger.Fatal($"M-Files user property is not configured.");
                 throw new InvalidOperationException("M-Files user property is not configured.");
             }
 
             // Read the value of the successor property.
-            var successorId = env.ObjVerEx.GetLookupID(this.Configuration.MigrateContractsConfiguration.SuccessorProperty.ID);
+            var successorId = env.ObjVerEx.GetLookupID(this.Configuration.SuccessorProperty.ID);
             if (successorId == -1)
             {
                 throw new InvalidOperationException("Successor is not configured.");
@@ -226,7 +233,7 @@ namespace TwelveDaysOfCode
             successor.EnsureLoaded();
 
             // Make sure that the successor has an M-Files user!
-            if(-1 == successor.GetLookupID(this.Configuration.MigrateContractsConfiguration.MFilesUser.ID))
+            if (-1 == successor.GetLookupID(this.Configuration.MFilesUser.ID))
             {
                 throw new InvalidOperationException("Successor must have an M-Files user.");
             }
@@ -235,78 +242,76 @@ namespace TwelveDaysOfCode
 
             // Add the task to the queue.
             this.Logger.Info($"Adding task to queue to migrate documents from {env.ObjVerEx.Title} to {successor.Title}");
-            this.TaskManager.AddTask
+            this.VaultApplication.TaskManager.AddTask
             (
                 env.Vault,
-                TaskQueueID, 
-                MigrateContractsToSuccessorTaskType, 
+                VaultApplication.TaskQueueID,
+                MigrateContractsToSuccessorTaskType,
                 new MigrateContractsToSuccessorTaskDirective()
                 {
                     DisplayName = $"Migrate documents from {env.ObjVerEx.Title} to {successor.Title}",
                     PersonLeaving = new ObjIDTaskDirective()
                     {
-                        ObjectTypeID = this.Configuration.MigrateContractsConfiguration.EmployeeObjectType.ID,
+                        ObjectTypeID = this.Configuration.EmployeeObjectType.ID,
                         ObjectID = env.ObjVer.ID
                     },
                     Successor = new ObjIDTaskDirective()
                     {
-                        ObjectTypeID = this.Configuration.MigrateContractsConfiguration.EmployeeObjectType.ID,
+                        ObjectTypeID = this.Configuration.EmployeeObjectType.ID,
                         ObjectID = successorId
                     }
                 }
                 );
         }
+    }
 
-        [DataContract]
-        public class MigrateContractsToSuccessorTaskDirective
-            : TaskDirectiveWithDisplayName
-        {
-            [DataMember]
-            public ObjIDTaskDirective PersonLeaving { get; set; }
-
-
-            [DataMember]
-            public ObjIDTaskDirective Successor { get; set; }
-        }
-
-        [DataContract]
-        public class MigrateContractsConfiguration
-            : ConfigurationBase
-        {
-
-            // We will use the trigger class from a previous task here too.
-            [DataMember(Order = 1)]
-            [JsonConfEditor
-            (
-                HelpText = "An object must match all of the conditions the trigger to cause the documents to be re-assigned."
-            )]
-            public Trigger Trigger { get; set; }
-
-            [DataMember(Order = 2)]
-            [JsonConfEditor(Label = "Documents to update")]
-            public SearchConditionsJA DocumentsToUpdate { get; set; }
-
-            [DataMember(Order = 3)]
-            [MFObjType]
-            [JsonConfEditor(Label = "Employee")]
-            public MFIdentifier EmployeeObjectType { get; set; } = "OT.Employee";
-
-            [DataMember(Order = 4)]
-            [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup, MFDataType.MFDatatypeMultiSelectLookup })]
-            [JsonConfEditor(Label = "Contract owner")]
-            public MFIdentifier ContractOwnerProperty { get; set; } = "PD.ContractOwner";
-
-            [DataMember(Order = 5)]
-            [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup, MFDataType.MFDatatypeMultiSelectLookup })]
-            [JsonConfEditor(Label = "Successor")]
-            public MFIdentifier SuccessorProperty { get; set; } = "PD.Successor";
-
-            [DataMember(Order = 5)]
-            [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup })]
-            [JsonConfEditor(Label = "M-Files user")]
-            public MFIdentifier MFilesUser { get; set; } = "PD.MfilesUser";
-        }
+    [DataContract]
+    public class MigrateContractsToSuccessorTaskDirective
+        : TaskDirectiveWithDisplayName
+    {
+        [DataMember]
+        public ObjIDTaskDirective PersonLeaving { get; set; }
 
 
+        [DataMember]
+        public ObjIDTaskDirective Successor { get; set; }
+    }
+
+    [DataContract]
+    public class MigrateContractsConfiguration
+        : ConfigurationBase
+    {
+
+        // We will use the trigger class from a previous task here too.
+        [DataMember(Order = 1)]
+        [JsonConfEditor
+        (
+            HelpText = "An object must match all of the conditions the trigger to cause the documents to be re-assigned."
+        )]
+        public Trigger Trigger { get; set; }
+
+        [DataMember(Order = 2)]
+        [JsonConfEditor(Label = "Documents to update")]
+        public SearchConditionsJA DocumentsToUpdate { get; set; }
+
+        [DataMember(Order = 3)]
+        [MFObjType]
+        [JsonConfEditor(Label = "Employee")]
+        public MFIdentifier EmployeeObjectType { get; set; } = "OT.Employee";
+
+        [DataMember(Order = 4)]
+        [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup, MFDataType.MFDatatypeMultiSelectLookup })]
+        [JsonConfEditor(Label = "Contract owner")]
+        public MFIdentifier ContractOwnerProperty { get; set; } = "PD.ContractOwner";
+
+        [DataMember(Order = 5)]
+        [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup, MFDataType.MFDatatypeMultiSelectLookup })]
+        [JsonConfEditor(Label = "Successor")]
+        public MFIdentifier SuccessorProperty { get; set; } = "PD.Successor";
+
+        [DataMember(Order = 5)]
+        [MFPropertyDef(Datatypes = new[] { MFDataType.MFDatatypeLookup })]
+        [JsonConfEditor(Label = "M-Files user")]
+        public MFIdentifier MFilesUser { get; set; } = "PD.MfilesUser";
     }
 }

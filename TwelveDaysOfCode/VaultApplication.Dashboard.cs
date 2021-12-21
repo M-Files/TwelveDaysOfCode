@@ -61,6 +61,25 @@ namespace TwelveDaysOfCode
                 dashboard.AddContent(panel);
             }
 
+            // Get module data.
+            if(this.Modules.Count > 0)
+            { 
+                var modulesDashboardPanel = new DashboardPanel()
+                {
+                    Title = "Available modules"
+                };
+                var moduleList = new DashboardList();
+                foreach (var module in this.Modules)
+                {
+                    moduleList.Items.Add(new DashboardListItem()
+                    {
+                        Title = module.Name ?? module.GetType().Name
+                    });
+                }
+                modulesDashboardPanel.InnerContent = moduleList;
+                dashboard.AddContent(modulesDashboardPanel);
+            }
+
             // Important statistics?
             if(this.Configuration?.DashboardStatisticsConfiguration?.Enabled ?? false)
             {

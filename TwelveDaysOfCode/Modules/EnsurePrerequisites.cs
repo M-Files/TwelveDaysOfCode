@@ -9,7 +9,6 @@ using MFiles.VAF.Core;
 using MFiles.VAF.Extensions;
 using MFilesAPI;
 using Newtonsoft.Json;
-using NLog;
 using NLog.Targets;
 using System;
 using System.Collections.Generic;
@@ -20,10 +19,14 @@ using System.Runtime.Serialization;
 
 namespace TwelveDaysOfCode
 {
-    public partial class VaultApplication
-        : MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>
+    internal class EnsurePrerequisitesModule
+        : SimpleModuleBase<EnsureObjectPrerequisitesConfiguration>
     {
-
+        public EnsurePrerequisitesModule()
+            : base((c) => c?.EnsureObjectPrerequisitesConfiguration)
+        {
+            this.Name = "Ensure prerequisite objects";
+        }
         /// <summary>
         /// Checks that the object has any configured prerequisites as per configuration.
         /// </summary>
@@ -32,7 +35,7 @@ namespace TwelveDaysOfCode
         public void EnsureObjectPrerequisites(EventHandlerEnvironment env)
         {
             // Sanity.
-            if (false == (this.Configuration?.EnsureObjectPrerequisitesConfiguration?.Enabled ?? false))
+            if (false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Object prerequisite checking skipped; disabled in configuration.");
                 return;
@@ -40,7 +43,6 @@ namespace TwelveDaysOfCode
 
             // Are there any rules for this object?
             var matchingRules = this.Configuration? 
-                .EnsureObjectPrerequisitesConfiguration?
                 .Rules?
                 .Where(r => r.Triggers?.Any(c => c?.Condition?.IsMatch(env.ObjVerEx, true, env.CurrentUserID) ?? false) ?? false)?
                 .ToList()

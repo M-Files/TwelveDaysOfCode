@@ -51,15 +51,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration.cs" />
+    <Compile Include="Modules\SimpleModuleBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VaultApplication.Modules.cs" />
     <Compile Include="VaultApplication.Dashboard.cs" />
-    <Compile Include="VaultApplication.EnsurePrerequisites.cs" />
-    <Compile Include="VaultApplication.GenerateObjectsOnDemand.cs" />
+    <Compile Include="Modules\EnsurePrerequisites.cs" />
+    <Compile Include="Modules\GenerateObjectsOnDemand.cs" />
     <Compile Include="VaultApplication.Logging.cs" />
-    <Compile Include="VaultApplication.MigrateContracts.cs" />
-    <Compile Include="VaultApplication.RetrieveGists.cs" />
-    <Compile Include="VaultApplication.SharedLinkGeneration.cs" />
+    <Compile Include="Modules\MigrateContracts.cs" />
+    <Compile Include="Modules\ImportGists.cs" />
     <Compile Include="VaultApplication.cs" />
+    <Compile Include="Modules\SharedLinkGeneration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="appdef.xml">
@@ -71,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="install-application.ps1" />
-    <Compile Include="VaultApplication.UploadToFinance.cs" />
+    <Compile Include="Modules\UploadToFinance.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="MFiles.VAF">

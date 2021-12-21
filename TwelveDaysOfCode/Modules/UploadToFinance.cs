@@ -14,8 +14,21 @@ using System.Threading.Tasks;
 
 namespace TwelveDaysOfCode
 {
-    public partial class VaultApplication
+    internal class UploadToFinanceModule
+        : SimpleModuleBase<UploadToFinanceConfiguration>
     {
+        public UploadToFinanceModule()
+            : base((c) => c?.UploadToFinanceConfiguration)
+        {
+            this.Name = "Upload to finance";
+
+            // Set up the finance uploader.
+            this.FinanceUploader = new SaveToDiskUploader
+            (
+                () => this.Configuration?.OutputPath
+            );
+        }
+
         // Finance uploader set in constructor.
         internal IFinanceUploader FinanceUploader { get; set; }
 
@@ -32,7 +45,7 @@ namespace TwelveDaysOfCode
         public void UploadInvoiceToFinance(EventHandlerEnvironment env)
         {
             // Sanity.
-            if(false == (this.Configuration?.UploadToFinanceConfiguration?.Enabled ?? false))
+            if(false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Upload to finance is disabled in configuration; skipping checks.");
                 return;
@@ -44,26 +57,26 @@ namespace TwelveDaysOfCode
             }
 
             // Does the object match the trigger?
-            if(false == (this.Configuration?.UploadToFinanceConfiguration?.Trigger?.Condition?.IsMatch(env.ObjVerEx, true, env.CurrentUserID) ?? false))
+            if(false == (this.Configuration?.Trigger?.Condition?.IsMatch(env.ObjVerEx, true, env.CurrentUserID) ?? false))
             {
                 this.Logger.Info($"Object {env.ObjVer.ToJSON()} does not match trigger to upload to finance.");
                 return;
             }
 
             // Add the task to the queue.
-            this.TaskManager.AddTask(env.Vault, TaskQueueID, UploadToFinanceTaskType, new ObjIDTaskDirective(env.ObjVerEx.ObjID, env.ObjVerEx.Title));
+            this.VaultApplication.TaskManager.AddTask(env.Vault, VaultApplication.TaskQueueID, UploadToFinanceTaskType, new ObjIDTaskDirective(env.ObjVerEx.ObjID, env.ObjVerEx.Title));
         }
 
         /// <summary>
         /// Processes items of type <see cref="UploadToFinanceTaskType" /> on queue <see cref="TaskQueueID" />
         /// </summary>
         // Using full transaction mode which may not be best for situations with slower "save" methods, like uploads.
-        [TaskProcessor(TaskQueueID, UploadToFinanceTaskType, TransactionMode = TransactionMode.Full)]
+        [TaskProcessor(VaultApplication.TaskQueueID, UploadToFinanceTaskType, TransactionMode = TransactionMode.Full)]
         [ShowOnDashboard("Upload invoices to finance")]
         public void UploadToFinanceTaskProcessor(ITaskProcessingJob<ObjIDTaskDirective> job)
         {
             // Sanity.
-            if (false == (this.Configuration?.UploadToFinanceConfiguration?.Enabled ?? false))
+            if (false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Upload to finance is disabled in configuration; re-queuing task");
                 throw new AppTaskException(TaskProcessingJobResult.Requeue);
@@ -97,7 +110,7 @@ namespace TwelveDaysOfCode
             }
 
             // If the object no longer matches the trigger then stop.
-            if (false == (this.Configuration?.UploadToFinanceConfiguration?.Trigger?.Condition?.IsMatch(objVerEx, true) ?? false))
+            if (false == (this.Configuration?.Trigger?.Condition?.IsMatch(objVerEx, true) ?? false))
             {
                 this.Logger.Info($"Skipping {objVerEx.ObjVer.ToJSON()} as it no longer matches the trigger conditions.");
                 return;
@@ -137,7 +150,7 @@ namespace TwelveDaysOfCode
             }
 
             // Apply any properties.
-            foreach(var value in this.Configuration?.UploadToFinanceConfiguration?.UpdatedObjectValues ?? new List<UpdatedObjectValues>())
+            foreach(var value in this.Configuration?.UpdatedObjectValues ?? new List<UpdatedObjectValues>())
             {
                 // Sanity.
                 if(0 > value.Property.ID)

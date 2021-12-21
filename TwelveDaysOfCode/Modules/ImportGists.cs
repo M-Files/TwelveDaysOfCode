@@ -14,40 +14,46 @@ using System.Threading.Tasks;
 
 namespace TwelveDaysOfCode
 {
-    public partial class VaultApplication
+    internal class ImportGistsModule
+        : SimpleModuleBase<ImportGistConfiguration>
     {
+        public ImportGistsModule()
+            : base((c) => c?.ImportGistConfiguration)
+        {
+            this.Name = "Import gists";
+        }
 
         public const string ImportGistTaskType = "Import";
 
         /// <summary>
         /// Retrieves gists and schedules them for import.
         /// </summary>
-        [TaskProcessor(TaskQueueID, ImportGistTaskType, TransactionMode = TransactionMode.Full)]
+        [TaskProcessor(VaultApplication.TaskQueueID, ImportGistTaskType, TransactionMode = TransactionMode.Full)]
         [ShowOnDashboard("Import gists", ShowRunCommand = true)]
         public void GistImporter(ITaskProcessingJob<TaskDirective> job)
         {
             // Sanity.
-            if (false == (this.Configuration?.ImportGistConfiguration?.Enabled ?? false))
+            if (false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Gist import skipped; disabled in configuration.");
                 return;
             }
-            if (false == (this.Configuration?.ImportGistConfiguration?.TargetObjectType?.IsResolved ?? false))
+            if (false == (this.Configuration?.TargetObjectType?.IsResolved ?? false))
             {
                 this.Logger.Info("Gist import skipped as target object type could not be resolved.");
             }
-            if (false == (this.Configuration?.ImportGistConfiguration?.TargetClass?.IsResolved ?? false))
+            if (false == (this.Configuration?.TargetClass?.IsResolved ?? false))
             {
                 this.Logger.Info("Gist import skipped as target class could not be resolved.");
             }
-            var targetObjectType = job.Vault.ObjectTypeOperations.GetObjectType(this.Configuration.ImportGistConfiguration.TargetObjectType);
+            var targetObjectType = job.Vault.ObjectTypeOperations.GetObjectType(this.Configuration.TargetObjectType);
             var webClient = new System.Net.WebClient();
             webClient.Headers.Add("User-Agent", "Vault application"); // Needed for github!
             var temporaryFiles = new List<string>();
             var urlDataType = MFDataType.MFDatatypeText;
-            if (this.Configuration.ImportGistConfiguration.TargetURLProperty.IsResolved)
+            if (this.Configuration.TargetURLProperty.IsResolved)
             {
-                urlDataType = job.Vault.PropertyDefOperations.GetPropertyDef(this.Configuration.ImportGistConfiguration.TargetURLProperty.ID).DataType;
+                urlDataType = job.Vault.PropertyDefOperations.GetPropertyDef(this.Configuration.TargetURLProperty.ID).DataType;
             }
 
             try
@@ -57,7 +63,7 @@ namespace TwelveDaysOfCode
 
                 // Create a search builder to remove any gists that are now not in the source.
                 var gistSearchBuilder = new MFSearchBuilder(job.Vault);
-                gistSearchBuilder.ObjType(this.Configuration.ImportGistConfiguration.TargetObjectType.ID);
+                gistSearchBuilder.ObjType(this.Configuration.TargetObjectType.ID);
 
                 // Iterate over the gists and add them to the queue.
                 foreach(var gist in gists)
@@ -69,7 +75,7 @@ namespace TwelveDaysOfCode
                         // Use this method as it's faster than a search for failures.
                         var valueListItem = job.Vault.ValueListItemOperations.GetValueListItemByDisplayIDEx
                         (
-                            this.Configuration.ImportGistConfiguration.TargetObjectType.ID,
+                            this.Configuration.TargetObjectType.ID,
                             gist.Id
                         );
                         if (valueListItem != null)
@@ -91,10 +97,10 @@ namespace TwelveDaysOfCode
 
                     // Set up the properties.
                     var propertyValues = new MFPropertyValuesBuilder(job.Vault, existingGist?.Properties ?? new PropertyValues());
-                    propertyValues.SetClass(this.Configuration.ImportGistConfiguration.TargetClass.ID);
-                    propertyValues.SetTitle(gist.NodeId, this.Configuration.ImportGistConfiguration.TargetClass.ID);
-                    if (this.Configuration.ImportGistConfiguration.TargetURLProperty.IsResolved)
-                        propertyValues.Add(this.Configuration.ImportGistConfiguration.TargetURLProperty.ID, urlDataType, gist.Url);
+                    propertyValues.SetClass(this.Configuration.TargetClass.ID);
+                    propertyValues.SetTitle(gist.NodeId, this.Configuration.TargetClass.ID);
+                    if (this.Configuration.TargetURLProperty.IsResolved)
+                        propertyValues.Add(this.Configuration.TargetURLProperty.ID, urlDataType, gist.Url);
 
                     // Files?
                     var sourceObjectFiles = new SourceObjectFiles();
@@ -143,7 +149,7 @@ namespace TwelveDaysOfCode
 
                         // If it is now an SFD then set the flag.
                         if (sourceObjectFiles.Count == 1
-                                && this.Configuration.ImportGistConfiguration.TargetObjectType.ID == (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument)
+                                && this.Configuration.TargetObjectType.ID == (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument)
                         {
                             job.Vault.ObjectOperations.SetSingleFileObject(objVerEx.ObjVer, true);
                         }
@@ -158,11 +164,11 @@ namespace TwelveDaysOfCode
                         // Create.
                         existingGist = job.Vault.ObjectOperations.CreateNewObjectEx
                         (
-                            this.Configuration.ImportGistConfiguration.TargetObjectType.ID,
+                            this.Configuration.TargetObjectType.ID,
                             propertyValues.Values,
                             sourceObjectFiles,
                             SFD: sourceObjectFiles.Count == 1
-                                && this.Configuration.ImportGistConfiguration.TargetObjectType.ID == (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument
+                                && this.Configuration.TargetObjectType.ID == (int)MFBuiltInObjectType.MFBuiltInObjectTypeDocument
                         );
                         id = existingGist.ObjVer.ID;
                         this.Logger.Info($"Created gist with external ID {gist.Id} ({existingGist.ObjVer.ToJSON()})");
@@ -352,7 +358,7 @@ namespace TwelveDaysOfCode
     {
         [DataMember(Order = 2)]
         [JsonConfEditor(Label = "Schedule")]
-        [RecurringOperationConfiguration(VaultApplication.TaskQueueID, VaultApplication.ImportGistTaskType)]
+        [RecurringOperationConfiguration(VaultApplication.TaskQueueID, ImportGistsModule.ImportGistTaskType)]
         public Frequency ImportGistSchedule { get; set; } = TimeSpan.FromHours(1);
 
         [DataMember(Order = 3)]

@@ -20,9 +20,14 @@ using System.Runtime.Serialization;
 
 namespace TwelveDaysOfCode
 {
-    public partial class VaultApplication
-        : MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>
+    internal class GenerateObjectsOnDemandModule
+        : SimpleModuleBase<GenerateDocumentsOnDemandConfiguration>
     {
+        public GenerateObjectsOnDemandModule()
+            : base((c) => c?.GenerateDocumentsOnDemandConfiguration)
+        {
+            this.Name = "Generate documents on demand";
+        }
 
         /// <summary>
         /// Generates required documents as per the configured rules.
@@ -44,7 +49,7 @@ namespace TwelveDaysOfCode
              */
 
             // Sanity.
-            if (false == (this.Configuration?.GenerateDocumentsOnDemandConfiguration?.Enabled ?? false))
+            if (false == (this.Configuration?.Enabled ?? false))
             {
                 this.Logger.Info("Documentation generation skipped; disabled in configuration.");
                 return;
@@ -52,7 +57,6 @@ namespace TwelveDaysOfCode
 
             // Are there any rules for this object?
             var matchingRules = this.Configuration? 
-                .GenerateDocumentsOnDemandConfiguration?
                 .Rules?
                 .Where(r => r.Triggers?.Any(c => c?.Condition?.IsMatch(env.ObjVerEx, true, env.CurrentUserID) ?? false) ?? false)?
                 .ToList()

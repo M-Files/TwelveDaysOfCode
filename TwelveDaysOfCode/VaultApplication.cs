@@ -9,6 +9,7 @@ using MFilesAPI;
 using NLog;
 using NLog.Targets;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -38,12 +39,14 @@ namespace TwelveDaysOfCode
             System.Net.ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            // Set up the finance uploader.
-            this.FinanceUploader = new SaveToDiskUploader
-            (
-                () => this.Configuration?.UploadToFinanceConfiguration?.OutputPath
-            );
+            // Set up the modules
+            this.PopulateModules();
         }
+
+        /// <summary>
+        /// The application's current configuration.
+        /// </summary>
+        public new Configuration Configuration => base.Configuration;
 
         ~VaultApplication()
         {

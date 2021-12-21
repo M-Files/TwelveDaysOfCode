@@ -14,26 +14,21 @@ namespace TwelveDaysOfCode
     {
 
         [DataMember(Order = 1)]
-        [JsonConfEditor(Label = "SMTP configuration")]
-        public MFiles.VAF.Extensions.Email.VAFSmtpConfiguration SmtpConfiguration { get; set; }
-            = new MFiles.VAF.Extensions.Email.VAFSmtpConfiguration();
-
-        [DataMember(Order = 2)]
         [JsonConfEditor(Label = "Shared link generation")]
         public SharedLinkGenerationConfiguration SharedLinkGenerationConfiguration { get; set; }
             = new SharedLinkGenerationConfiguration();
 
-        [DataMember(Order = 3)]
+        [DataMember(Order = 2)]
         [JsonConfEditor(Label = "Import gists")]
         public ImportGistConfiguration ImportGistConfiguration { get; set; }
             = new ImportGistConfiguration();
 
-        [DataMember(Order = 4)]
+        [DataMember(Order = 3)]
         [JsonConfEditor(Label = "Generate documents on demand")]
         public GenerateDocumentsOnDemandConfiguration GenerateDocumentsOnDemandConfiguration { get; set; }
             = new GenerateDocumentsOnDemandConfiguration();
 
-        [DataMember(Order = 5)]
+        [DataMember(Order = 4)]
         [JsonConfEditor(Label = "Ensure object prerequisites")]
         public EnsureObjectPrerequisitesConfiguration EnsureObjectPrerequisitesConfiguration { get; set; }
             = new EnsureObjectPrerequisitesConfiguration();

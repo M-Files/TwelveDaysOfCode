@@ -13,13 +13,15 @@ using MFiles.VAF.Extensions;
 
 namespace TwelveDaysOfCode
 {
-    /// <summary>
-    /// The entry point for this Vault Application Framework application.
-    /// </summary>
-    /// <remarks>Examples and further information available on the developer portal: http://developer.m-files.com/. </remarks>
-    public partial class VaultApplication
-        : MFiles.VAF.Extensions.ConfigurableVaultApplicationBase<Configuration>
+    internal class SharedLinkGenerationModule
+        : SimpleModuleBase<SharedLinkGenerationConfiguration>
     {
+        public SharedLinkGenerationModule()
+            : base((c) => c?.SharedLinkGenerationConfiguration)
+        {
+            this.Name = "Shared link generation";
+        }
+
         /// <summary>
         /// Handles the <see cref="MFEventHandlerType.MFEventHandlerBeforeCheckInChangesFinalize" /> event.
         /// </summary>
@@ -31,7 +33,7 @@ namespace TwelveDaysOfCode
             {
                 // Don't work if this functionality is disabled.
                 if (false == (this.Configuration?.Enabled ?? false)
-                    || false == (this.Configuration?.SharedLinkGenerationConfiguration?.Enabled ?? false))
+                    || false == (this.Configuration?.Enabled ?? false))
                 {
                     this.Logger.Log(NLog.LogLevel.Debug, "Create shared link handler skipped as it is not enabled.");
                     return;
@@ -47,7 +49,6 @@ namespace TwelveDaysOfCode
                 // Is there a trigger for our current state?  If not then die.
                 var trigger = this
                         .Configuration?
-                        .SharedLinkGenerationConfiguration?
                         .Triggers?
                         .Where(t => t.Enabled && t.TriggerState.IsResolved)
                         .FirstOrDefault(t => t.TriggerState.ID == env.ObjVerEx.State);
@@ -91,7 +92,7 @@ namespace TwelveDaysOfCode
                         sli.ExpirationTime = env.ObjVerEx.GetPropertyAsDateTime(trigger.LinkExpiryDate.ID)?.ToTimestamp();
 
                     // By default M-Files doesn't allow linking to specific versions.
-                    if (false == this.Configuration.SharedLinkGenerationConfiguration.UseVersionDependentLinks)
+                    if (false == this.Configuration.UseVersionDependentLinks)
                         sli.FileVer.Version = -1;
 
                     // Create the shared link in the vault.
@@ -171,6 +172,11 @@ namespace TwelveDaysOfCode
         )]
         public List<SharedLinkTrigger> Triggers { get; set; }
             = new List<SharedLinkTrigger>();
+
+        [DataMember(Order = 3)]
+        [JsonConfEditor(Label = "SMTP configuration")]
+        public MFiles.VAF.Extensions.Email.VAFSmtpConfiguration SmtpConfiguration { get; set; }
+            = new MFiles.VAF.Extensions.Email.VAFSmtpConfiguration();
 
         [DataContract]
         public class SharedLinkTrigger
