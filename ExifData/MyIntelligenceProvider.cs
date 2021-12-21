@@ -70,9 +70,6 @@ namespace ExifData
         {
             var result = new MetadataResult();
 
-            // TODO: Populate the metadata result.
-            System.Diagnostics.Debugger.Launch();
-
             // The file data can be found in request.FileContents.
             foreach (var file in request.FileContents)
             {
