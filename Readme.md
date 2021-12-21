@@ -78,4 +78,6 @@ Challenges will be released once per day, in the evening.  You can choose to und
 1. **23rd December:** Build an intelligence service that can read the date that [this photo](lib/photo-for-exif-extraction.jpg) was taken, as well as the GPS co-ordinates, and provide them as metadata suggestions.  You might use this C# library (https://www.nuget.org/packages/MetadataExtractor/) to extract the EXIF data.
 	1. Tip: EXIF GPS data is held differently to the standard decimal latitude/longitude that you may have seen.  [Read this to convert between the two](https://gis.stackexchange.com/questions/136925/how-to-parse-exif-gps-information-to-lat-lng-decimal-numbers).
 	1. Suggested extension: place the image into a workflow and use a state action and the COM API to read the suggestions and automatically apply them.
-1. **24th December:** *Not yet published*
+1. **24th December:** Create a new project using the "Custom External Object Type Data Source" Visual Studio template.  Implement a data source using the same data as you did on day #4.  Install and configure this data source.
+	1. Tip: if using the same object type, disable your other application to stop the two trying to both work on the same objects.
+	1. Consider the pros and cons of these two approaches; which do you feel you would use more, and why?
