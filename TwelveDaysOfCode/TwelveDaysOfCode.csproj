@@ -53,6 +53,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Modules\SimpleModuleBase.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VaultApplication.Licensing.cs" />
     <Compile Include="VaultApplication.Modules.cs" />
     <Compile Include="VaultApplication.Dashboard.cs" />
     <Compile Include="Modules\EnsurePrerequisites.cs" />
@@ -90,6 +91,9 @@
     <PackageReference Include="NLog">
       <Version>4.7.13</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Licensing\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="RunWhenBuildChanges" AfterTargets="CoreBuild">

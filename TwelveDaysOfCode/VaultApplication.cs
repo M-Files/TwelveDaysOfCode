@@ -39,8 +39,11 @@ namespace TwelveDaysOfCode
             System.Net.ServicePointManager.SecurityProtocol =
                 SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
 
-            // Set up the modules
+            // Set up the modules.
             this.PopulateModules();
+
+            // Configure the licensing.
+            this.ConfigureLicenseDecoder();
         }
 
         /// <summary>

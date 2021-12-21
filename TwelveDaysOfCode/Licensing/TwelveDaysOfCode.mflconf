@@ -1,0 +1,51 @@
+{
+  "GeneratorHeader": "M-Files Vault Application Framework License Generator",
+  "Advanced": true,
+
+  "KeyFile": "TwelveDaysOfCode.Keys.conf",
+
+  "Editor": {
+	"editors" : {
+		"LicenseConfiguration" : {
+			"type" : "LicenseConfiguration",
+			"extend" : "object",
+			"members" : {
+				"Description" : {
+					"type" : "string",
+					"helpText" : "Application Name:",
+					"defaultValue" : "Twelve Days of Code"
+				},
+				"LicensedTo" : {
+					"type" : "string",
+					"helpText" : "Customer:"
+				},
+				"Application" : {
+					"type" : "string",
+					"defaultValue" : "{03e08122-6c6a-47ba-bcba-4d323bad2729}",
+					"hidden": true,
+					"includeInHeader": false
+				},
+				"LicenseExpireDate" : {
+					"type" : "date",
+					"helpText" : "Expire date:\n(unset is never)",
+					"format" : "d.M.yyyy"
+				},
+				"Vaults": {
+					"type": "array",
+					"childTemplate": "string",
+					"helpText": "Only valid in vaults:\n(empty for allow all)" ,
+					"freeAdd": true,
+				}
+			}
+		}
+	},
+	"type" : "LicenseConfiguration"
+},
+
+  "Password": "",
+  "SignatureField": "",
+  "Mode": "TwoKeys",
+  "Version": 3,
+  "IncludeHeader": true,
+  "Template": "Hello World"
+}
