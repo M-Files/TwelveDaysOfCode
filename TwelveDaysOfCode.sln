@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwelveDaysOfCode", "TwelveD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ExifData", "ExifData\ExifData.csproj", "{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportGists", "ImportGists\ImportGists.csproj", "{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,12 @@ Global
 		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.DebugWithoutDeployment|Any CPU.Build.0 = Debug|Any CPU
 		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2ECAFB57-CA13-4E5B-8A2C-53BA16E8D7AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}.DebugWithoutDeployment|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}.DebugWithoutDeployment|Any CPU.Build.0 = Debug|Any CPU
+		{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF2D1C2E-E188-4EC6-92D1-4F2D2A45924D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
